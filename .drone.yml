@@ -17,6 +17,8 @@ steps:
         - production
     image: ubuntu:18.04
     commands:
+      - pwd
+      - ls -lh
       - mkdir -p "${DRONE_BRANCH}/"
       - cp "live/*.${DRONE_BRANCH}" "${DRONE_BRANCH}/"
       - cp live/*.tf "${DRONE_BRANCH}/"
