@@ -17,14 +17,11 @@ steps:
         - production
     image: ubuntu:18.04
     commands:
-      - pwd
-      - ls -lh live
-      - mkdir -p "${DRONE_BRANCH}/"
-      - [[ -f live/backend.tf.development ]] \&\& echo "file exists"
-      - cp "live/*.${DRONE_BRANCH}" "${DRONE_BRANCH}/"
-      - cp live/*.tf "${DRONE_BRANCH}/"
-      # - cp live/*.tpl  ${DRONE_BRANCH}/
-      - mv "${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH}" "${DRONE_BRANCH}/backend.tf"
+      - mkdir -p ${DRONE_BRANCH}/
+      - cp live/*.${DRONE_BRANCH} ${DRONE_BRANCH}/
+      - cp live/*.tf ${DRONE_BRANCH}/
+      - cp live/*.tpl ${DRONE_BRANCH}/ 2>/dev/null || true
+      - mv ${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH} ${DRONE_BRANCH}/backend.tf
 
   - name: terraform-apply
     when:
