@@ -1,0 +1,9 @@
+terraform {
+  backend "s3" {
+    region         = "eu-west-1"
+    bucket         = "tfmonorepo-state-production"
+    key            = "terraform.tfstate"
+    dynamodb_table = "tfmonorepo-state-lock-production"
+    encrypt        = false
+  }
+}
