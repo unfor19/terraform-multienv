@@ -1,9 +1,10 @@
 # terraform-monorepo
 
-A mono-repo template for maintaining cloud infrastructure with Terraform. All environments (development, staging and production) are maintained in the same repository.
+A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining cloud infrastructure with [Terraform](https://www.terraform.io/). This template includes a CI/CD process, that applies the infrastructure in AWS account, by using [drone](https://drone.io)
 
 ## Assumptions
 
+- All environments (development, staging and production) are maintained in the same repository.
 - \${app_name} = `tfmonorepo`
 - \${environment} = `development` or `staging` or `production`
 - \${ci-cd-tool} = `drone`
@@ -46,6 +47,8 @@ A mono-repo template for maintaining cloud infrastructure with Terraform. All en
       - aws_secret_access_key\_**development**
         <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them properly
 
+   1. Find and Replace application name `tfmonorepo` in `./.drone.yml`
+
 1. [terraform v0.12.28](https://releases.hashicorp.com/terraform/0.12.28/) - for local development
 
 ## Repository Structure
@@ -67,19 +70,22 @@ A mono-repo template for maintaining cloud infrastructure with Terraform. All en
 
 ### Generic
 
-- **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, or using `master` for `production`. Using full names is more explicit and clearer
+- **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, `prod` or using `master` for `production`. Using full names is more explicit and clearer
+- **Resources Names** should **contain the environment name**, for example `production`
 
 ### Security
 
 - **AdministratorAccess Permission for CI/CD** should be used only in early development stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege)
 - **IAM Roles** for self-hosted CI/CD runners (nodes) are **preferred over AWS key/secret**
 
-### Git and Repository Structure
+### Git
 
 - **Default Branch** is **development** to avoid confusion
 - **Branches Names** per environment makes the whole CI/CD process simpler
-- **Resources Names** should **contain the environment name**, for example `staging`
-- **Modules** should be stored in a **different repository**
-- **Git Feature Branch** per environment **complicates** the whole process, though it is possible, it's not recommended
-- **Infrastructure Repository** should **separated** from the **Frontend and Backend Respositories**
+- **Feature Branch** per environment **complicates** the whole process, though it is possible, it's not recommended
 - **Updating Environment Infrastructure** is possible with **git merge**
+
+### Repository Structure
+
+- **Modules** should be stored in a **different repository**
+- **Infrastructure Repository** should **separated** from the **Frontend and Backend Respositories**
