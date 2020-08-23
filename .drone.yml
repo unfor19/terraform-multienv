@@ -20,7 +20,8 @@ steps:
       - pwd
       - ls -lh live
       - mkdir -p "${DRONE_BRANCH}/"
-      - cp "live/backend.*.${DRONE_BRANCH}" "${DRONE_BRANCH}/"
+      - [[ -f live/backend.tf.development ]] && echo "file exists"
+      - cp "live/*.${DRONE_BRANCH}" "${DRONE_BRANCH}/"
       - cp live/*.tf "${DRONE_BRANCH}/"
       # - cp live/*.tpl  ${DRONE_BRANCH}/
       - mv "${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH}" "${DRONE_BRANCH}/backend.tf"
