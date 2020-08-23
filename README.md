@@ -65,12 +65,21 @@ A mono-repo template for maintaining cloud infrastructure with Terraform. All en
 
 ## Recommendations
 
+### Generic
+
+- **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, or using `master` for `production`. Using full names is more explicit and clearer
+
+### Security
+
 - **AdministratorAccess Permission for CI/CD** should be used only in early development stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege)
-- **Git Default Branch** is **development** to avoid confusion
-- **Git Branches Names** per environment makes the whole CI/CD process simpler
-- **Resources Names** should **contain the environment name**, for example `staging`.
-- **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, or using `master` for `production`. Using full names is more explicit and clearer.
-- **Infrastructure Repository** should **separated** from the **Frontend and Backend Respositories**
+- **IAM Roles** for self-hosted CI/CD runners (nodes) are **preferred over AWS key/secret**
+
+### Git and Repository Structure
+
+- **Default Branch** is **development** to avoid confusion
+- **Branches Names** per environment makes the whole CI/CD process simpler
+- **Resources Names** should **contain the environment name**, for example `staging`
 - **Modules** should be stored in a **different repository**
 - **Git Feature Branch** per environment **complicates** the whole process, though it is possible, it's not recommended
-- **IAM Roles** for self-hosted CI/CD runners (nodes) are **preferred over AWS key/secret**
+- **Infrastructure Repository** should **separated** from the **Frontend and Backend Respositories**
+- **Updating Environment Infrastructure** is possible with **git merge**
