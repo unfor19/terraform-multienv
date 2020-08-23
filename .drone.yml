@@ -18,9 +18,9 @@ steps:
     image: ubuntu:18.04
     commands:
       - pwd
-      - ls -lh
+      - ls -lh live
       - mkdir -p "${DRONE_BRANCH}/"
-      - cp "live/*.${DRONE_BRANCH}" "${DRONE_BRANCH}/"
+      - cp "live/backend.*.${DRONE_BRANCH}" "${DRONE_BRANCH}/"
       - cp live/*.tf "${DRONE_BRANCH}/"
       # - cp live/*.tpl  ${DRONE_BRANCH}/
       - mv "${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH}" "${DRONE_BRANCH}/backend.tf"
