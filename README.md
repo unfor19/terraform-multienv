@@ -1,10 +1,13 @@
 # terraform-monorepo
 
-A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining cloud infrastructure with [Terraform](https://www.terraform.io/). This template includes a CI/CD process, that applies the infrastructure in AWS account, by using [drone](https://drone.io)
+A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining cloud infrastructure with [Terraform](https://www.terraform.io/). This template includes a CI/CD process, that applies the infrastructure in AWS account, implemented with [drone](https://drone.io).
+
+To get started with Terraform, watch this webinar - [Getting started with Terraform in AWS
+](https://www.youtube.com/watch?v=cBDmoC7QonA)
 
 ## Assumptions
 
-- All environments (development, staging and production) are maintained in the same repository.
+- All environments (development, staging and production) are maintained in the same repository
 - \${app_name} = `tfmonorepo`
 - \${environment} = `development` or `staging` or `production`
 - \${ci-cd-tool} = `drone`
@@ -12,6 +15,7 @@ A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining c
 - `production` is in a different AWS account
 - Branches names are aligned with environments names [`development`, `staging`, `production`]
 - The CI/CD tool supports the variable `${BRANCH_NAME}`, for example `${DRONE_BRANCH}`
+- [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
 - We're going to create a VPC, Subnets and Routing Tables per environment (all free)
 
 ## Getting Started
@@ -39,7 +43,7 @@ A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining c
    1. Create an IAM User for CI/CD in both development&staging account and production account
 
       - Name: `cicd`
-      - Permissions: `AdministratorAccess` (See Recommendations)
+      - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#recommendations))
 
    1. Create secrets for AWS credentials per environment, example for `development`
 
@@ -50,7 +54,7 @@ A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining c
    1. Find and Replace application name `tfmonorepo` in `./.drone.yml`
 
 1. Commit and push your changes to your repository
-1. Check out the logs in [Drone Cloud](https://cloud.drone.io) and new resources in AWS Console
+1. Check out the logs in [Drone Cloud](https://cloud.drone.io) and new resources in AWS Console. To watch the drone CI/CD logs of this repository - [unfor19/terraform-monorepo](https://cloud.drone.io/unfor19/terraform-monorepo)
 
 1. (Optional) [terraform v0.12.28](https://releases.hashicorp.com/terraform/0.12.28/) - for local development
 
@@ -76,6 +80,13 @@ A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining c
 - **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, `prod` or using `master` for `production`. Using full names is more explicit and clearer
 - **Resources Names** should **contain the environment name**, for example `production`
 
+### CI/CD
+
+- **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
+- **Unlock Terraform tfstate** by deleting the md5 item from the state's DynamoDB table, for example
+  - Table Name: `${app_name}-state-lock-${environment}`
+  - Item Name: `${app_name}-state-${environment}/terraform.tfstate-md5`
+
 ### Security
 
 - **AdministratorAccess Permission for CI/CD** should be used only in early development stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege)
@@ -92,3 +103,11 @@ A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining c
 
 - **Modules** should be stored in a **different repository**
 - **Infrastructure Repository** should **separated** from the **Frontend and Backend Respositories**
+
+## Authors
+
+Created and maintained by [Meir Gabay](https://github.com/unfor19)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/unfor19/terraform-monorepo/blob/master/LICENSE) file for details
