@@ -49,7 +49,10 @@ A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining c
 
    1. Find and Replace application name `tfmonorepo` in `./.drone.yml`
 
-1. [terraform v0.12.28](https://releases.hashicorp.com/terraform/0.12.28/) - for local development
+1. Commit and push your changes to your repository
+1. Check out the logs in [Drone Cloud](https://cloud.drone.io) and new resources in AWS Console
+
+1. (Optional) [terraform v0.12.28](https://releases.hashicorp.com/terraform/0.12.28/) - for local development
 
 ## Repository Structure
 
