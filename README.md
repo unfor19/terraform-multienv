@@ -16,8 +16,11 @@ A mono-repo template for maintaining cloud infrastructure with Terraform. All en
 ## Getting Started
 
 1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-monorepo/generate)
-1. Terraform Backend - Create the following resources per environment (6 total)
-   <br>(Optional) Deploy `./cloudformation/cfn-backend.yml` CloudFormation template
+1. Terraform Backend - Create the following resources per environment
+   <br>Four (4) in development&staging account and two (2) in production account (6 total)
+   <br>
+   <br>(Optional) Deploy with `./cloudformation/cfn-backend.yml` CloudFormation template
+   <br>
    1. S3 Bucket
       - Name: `${app_name}-state-${environment}`
       - Versioning: `Enabled`
@@ -32,7 +35,7 @@ A mono-repo template for maintaining cloud infrastructure with Terraform. All en
    1. `./live/variables.tf`
 1. CI/CD setup
 
-   1. Create an IAM User for CI/CD
+   1. Create an IAM User for CI/CD in both development&staging account and production account
 
       - Name: `cicd`
       - Permissions: `AdministratorAccess` (See Recommendations)
@@ -43,13 +46,9 @@ A mono-repo template for maintaining cloud infrastructure with Terraform. All en
       - aws_secret_access_key\_**development**
         <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them properly
 
-1. terraform v0.12.28 - for local development
-   <br>OS values: [`linux`, `darwin`, `windows`]
-   <br>`curl -sL -O https://releases.hashicorp.com/terraform/0.12.28/terraform_0.12.28_${OS}_amd64.zip`
+1. [terraform v0.12.28](https://releases.hashicorp.com/terraform/0.12.28/) - for local development
 
-## Methodology
-
-### Repository Structure
+## Repository Structure
 
 - `./`
   - Contains `README.md`, `.gitignore`, `LICENSE` and `.${cd-cd-tool}.yml`
@@ -64,7 +63,7 @@ A mono-repo template for maintaining cloud infrastructure with Terraform. All en
 - `./scripts/`
   - Contains scripts which improve the development process (`*.sh`)
 
-### Recommendations
+## Recommendations
 
 - **AdministratorAccess Permission for CI/CD** should be used only in early development stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege)
 - **Git Default Branch** is **development** to avoid confusion
