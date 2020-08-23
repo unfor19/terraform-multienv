@@ -1,0 +1,9 @@
+.*
+!.*ignore*
+!.drone.yml
+*.terraform
+*.idea
+*tfstate*
+development/
+staging/
+prod/
