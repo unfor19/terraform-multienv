@@ -18,8 +18,8 @@ steps:
     image: ubuntu:18.04
     commands:
       - mkdir -p "${DRONE_BRANCH}/"
-      - cp "live/*.${DRONE_BRANCH}" live/*.tf live/*.tpl "${DRONE_BRANCH}/live/"
-      - mv "${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH}" "${DRONE_BRANCH}/live/backend.tf"
+      - cp "live/*.${DRONE_BRANCH}" live/*.tf live/*.tpl "${DRONE_BRANCH}/"
+      - mv "${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH}" "${DRONE_BRANCH}/backend.tf"
 
   - name: terraform-apply
     when:
