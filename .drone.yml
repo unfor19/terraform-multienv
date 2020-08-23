@@ -1,0 +1,45 @@
+kind: pipeline
+type: docker
+name: terraform-infrastructure
+
+environment:
+  ### -----------------------
+  ### Available in all steps, change app_name to your app_name
+  TF_VAR_app_name: tfmonorepo
+  ### -----------------------
+
+steps:
+  - name: prepare-files-folders
+    when:
+      branch:
+        - development
+        - staging
+        - production
+    image: ubuntu:18.04
+    commands:
+      - mkdir -p "${DRONE_BRANCH}/"
+      - cp "live/*.${DRONE_BRANCH}" live/*.tf live/*.tpl "${DRONE_BRANCH}/live/"
+      - mv "${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH}" "${DRONE_BRANCH}/live/backend.tf"
+
+  - name: terraform-apply
+    when:
+      branch:
+        - development
+        - staging
+        - production
+    depends_on:
+      - prepare-files-folders
+    image: unfor19/drone-terraform:dev
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: aws_access_key_id_${DRONE_BRANCH}
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: aws_secret_access_key_${DRONE_BRANCH}
+    settings:
+      actions:
+        - validate
+        - plan
+        # - apply
+      root_dir: ${DRONE_BRANCH}/
+      vars:
+        environment: ${DRONE_BRANCH}
