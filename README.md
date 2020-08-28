@@ -7,11 +7,14 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 ## Assumptions
 
-- All environments, `development`, `staging` and `production` are maintained in the same git repository
-- `development` and `staging` are in the same AWS account, `production` is in a different AWS account
-- Branches names are aligned with environments names [`development`, `staging`, `production`]
+- Branches names are aligned with environments names, for example `development`, `staging` and `production`
 - The CI/CD tool supports the variable `${BRANCH_NAME}`, for example `${DRONE_BRANCH}`
-- We're going to create a VPC, Subnets and Routing Tables per environment (all free)
+
+- Multiple Environments
+
+  - You have multiple environments, for example `development`, `staging` and `production`
+  - All environments are maintained in the same git repository
+  - Hosting environments in different AWS account is supported (and recommended)
 
 - Variables
 
@@ -21,86 +24,87 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 ## Getting Started
 
-1.  Clone this repository or [Use as a template](https://github.com/unfor19/terraform-monorepo/generate)
-1.  Deploy Terraform Remote Backend - Create an S3 bucket to store `tfstate` and a DynamoDB Table for [state locking](https://www.terraform.io/docs/state/locking.html), per environment
+1. We're going to create a VPC, Subnets and Routing Tables per environment (all free)
+1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-monorepo/generate)
+1. Deploy Terraform Remote Backend - Create an S3 bucket to store `tfstate` and a DynamoDB Table for [state locking](https://www.terraform.io/docs/state/locking.html), per environment
 
-    [![Launch in Ireland](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Ireland (eu-west-1)](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
+   [![Launch in Ireland](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Ireland (eu-west-1)](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
 
-    [![Launch in Virginia](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Virginia (us-east-1)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
+   [![Launch in Virginia](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Virginia (us-east-1)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
 
-    <details><summary>
-    Other regions
-    </summary>
+   <details><summary>
+   Other regions
+   </summary>
 
-    To deploy in other regions, replace AWS_REGION with the region's code.
+   To deploy in other regions, replace AWS_REGION with the region's code.
 
-    `https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
+   `https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
 
-    </details>
+   </details>
 
-    <details><summary>
-    Deployed resources
-    </summary>
+   <details><summary>
+   Deployed resources
+   </summary>
 
-    1. S3 Bucket
-       - Name: `${app_name}-state-${environment}`
-       - Versioning: `Enabled`
-       - Access: `Block All`
-    1. DynamoDB Table
-       - Name: `${app_name}-state-lock-${environment}`
-       - Primary Key (partition key): `LockID`
-       - Billing Mode: `PROVISIONED`
-       - Read/Write capacity: `1`
+   1. S3 Bucket
+      - Name: `${app_name}-state-${environment}`
+      - Versioning: `Enabled`
+      - Access: `Block All`
+   1. DynamoDB Table
+      - Name: `${app_name}-state-lock-${environment}`
+      - Primary Key (partition key): `LockID`
+      - Billing Mode: `PROVISIONED`
+      - Read/Write capacity: `1`
 
-    </details>
+   </details>
 
-1.  Find and Replace `tfmonorepo` and `eu-west-1`
-    1. `./live/backend.tf.${environment}`
-    1. `./live/variables.tf`
-    1. `./.${ci-cd-tool}.yml`
-1.  CI/CD setup
+1. Find and Replace `tfmonorepo` and `eu-west-1`
+   1. `./live/backend.tf.${environment}`
+   1. `./live/variables.tf`
+   1. `./.${ci-cd-tool}.yml`
+1. CI/CD setup
 
-    1.  Sign in with your GitHub account to [drone.io](https://cloud.drone.io/login) and activate your newly created git repository
-    1.  AWS Console > Create an IAM User for CI/CD, per environment
+   1. Sign in with your GitHub account to [drone.io](https://cloud.drone.io/login) and activate your newly created git repository
+   1. AWS Console > Create an IAM User for CI/CD, per environment
 
-        - Name: `cicd-${environment}`
-        - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#security))
+      - Name: `cicd-${environment}`
+      - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#security))
 
-    1.  drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
+   1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
 
-        - aws_access_key_id\_**development**
-        - aws_secret_access_key\_**development**
+      - aws_access_key_id\_**development**
+      - aws_secret_access_key\_**development**
 
-         <details><summary>
-         Drone Secrets Example - Expand/Collapse
-         </summary>
+       <details><summary>
+       Drone Secrets Example - Expand/Collapse
+       </summary>
 
-        ![drone-secrets-example](https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
+      ![drone-secrets-example](https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
 
-           </details>
+         </details>
 
-        <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example above
+      <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example above
 
-1.  Commit and push the changes to your repository
+1. Commit and push the changes to your repository
 
-    ```bash
-    $ git checkout development
-    $ git add .
-    $ git commit -m "deploy development"
-    $ git push -U origin development
-    ```
+   ```bash
+   $ git checkout development
+   $ git add .
+   $ git commit -m "deploy development"
+   $ git push -U origin development
+   ```
 
-1.  Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-monorepo](https://cloud.drone.io/unfor19/terraform-monorepo/9/1/2)
+1. Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-monorepo](https://cloud.drone.io/unfor19/terraform-monorepo/9/1/2)
 
-1.  Promote `development` environment to `staging`
+1. Promote `development` environment to `staging`
 
-    ```bash
-    $ git checkout staging
-    $ git merge development
-    $ git push
-    ```
+   ```bash
+   $ git checkout staging
+   $ git merge development
+   $ git push
+   ```
 
-1.  That's it, you've just deployed two identical environments, go ahead and do the same with `production`
+1. That's it, you've just deployed two identical environments, go ahead and do the same with `production`
 
 ## Repository Structure
 
@@ -124,6 +128,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 - **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, `prod` or using `master` for `production`. Using full names is more explicit and clearer
 - **Resources Names** should **contain the environment name**, for example `production`
 - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
+- **Using Multiple AWS Accounts** for hosting different environments is recommended.<br>The way I implement it - development and `staging` in the same account and `production` in a different account
 
 ### Terraform
 
