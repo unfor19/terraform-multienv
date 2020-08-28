@@ -3,13 +3,15 @@ version: 2.1
 workflows:
   pipeline:
     when:
-      or:
-        - equal: [development, << pipeline.git.branch >>]
-        - equal: [staging, << pipeline.git.branch >>]
-        - equal: [production, << pipeline.git.branch >>]
+      condition:
+        or:
+          - equal: [development, << pipeline.git.branch >>]
+          - equal: [staging, << pipeline.git.branch >>]
+          - equal: [production, << pipeline.git.branch >>]
     jobs:
       - prepare-files-folders
       - terraform-apply
+
 jobs:
   prepare-files-folders:
     docker:
@@ -24,6 +26,8 @@ jobs:
           cp live/*.tpl ${CIRCLE_BRANCH}/ 2>/dev/null || true
           mv ${CIRCLE_BRANCH}/backend.tf.${CIRCLE_BRANCH} ${CIRCLE_BRANCH}/backend.tf
   terraform-apply:
+    requires:
+      - prepare-files-folders
     docker:
       - image: unfor19/terraform-alpine:0.12.28
     steps:
