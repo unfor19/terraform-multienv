@@ -7,62 +7,106 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 ## Assumptions
 
-- All environments (development, staging and production) are maintained in the same repository
-- \${app_name} = `tfmonorepo`
-- \${environment} = `development` or `staging` or `production`
-- \${ci-cd-tool} = `drone`
-- `development` and `staging` are in the same AWS account
-- `production` is in a different AWS account
+- All environments, `development`, `staging` and `production` are maintained in the same git repository
+- `development` and `staging` are in the same AWS account, `production` is in a different AWS account
 - Branches names are aligned with environments names [`development`, `staging`, `production`]
 - The CI/CD tool supports the variable `${BRANCH_NAME}`, for example `${DRONE_BRANCH}`
-- [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
 - We're going to create a VPC, Subnets and Routing Tables per environment (all free)
+
+- Variables
+
+  - \${app_name} = `tfmonorepo`
+  - \${environment} = `development` or `staging` or `production`
+  - \${ci-cd-tool} = `drone`
 
 ## Getting Started
 
-1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-monorepo/generate)
-1. Terraform Backend - Create the following resources per environment
-   <br>Four (4) in development&staging account and two (2) in production account (6 total)
-   <br>
-   <br>(Optional) Deploy with `./cloudformation/cfn-backend.yml` CloudFormation template
-   <br>
-   1. S3 Bucket
-      - Name: `${app_name}-state-${environment}`
-      - Versioning: `Enabled`
-      - Access: `Block All`
-   1. DynamoDB Table
-      - Name: `${app_name}-state-lock-${environment}`
-      - Primary Key (partition key): `LockID`
-      - Billing Mode: `PROVISIONED`
-      - Read/Write capacity: `1`
-1. Find and Replace `tfmonorepo` and `eu-west-1` (if necessary)
-   1. `./live/backend.tf.${environment}`
-   1. `./live/variables.tf`
-1. CI/CD setup
+1.  Clone this repository or [Use as a template](https://github.com/unfor19/terraform-monorepo/generate)
+1.  Deploy Terraform Remote Backend - Create an S3 bucket to store `tfstate` and a DynamoDB Table for [state locking](https://www.terraform.io/docs/state/locking.html), per environment
 
-   1. Create an IAM User for CI/CD in both development&staging account and production account
+    [![Launch in Ireland](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Ireland (eu-west-1)](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
 
-      - Name: `cicd`
-      - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#recommendations))
+    [![Launch in Virginia](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Virginia (us-east-1)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
 
-   1. Create secrets for AWS credentials per environment, example for `development`
+    <details><summary>
+    Other regions
+    </summary>
 
-      - aws_access_key_id\_**development**
-      - aws_secret_access_key\_**development**
-        <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them properly
+    To deploy in other regions, replace AWS_REGION with the region's code.
 
-   1. Find and Replace application name `tfmonorepo` in `./.drone.yml`
+    `bash https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
 
-1. Commit and push your changes to your repository
-1. Check out the logs in [Drone Cloud](https://cloud.drone.io) and new resources in AWS Console. To watch the drone CI/CD logs of this repository - [unfor19/terraform-monorepo](https://cloud.drone.io/unfor19/terraform-monorepo)
+    </details>
 
-1. (Optional) [terraform v0.12.28](https://releases.hashicorp.com/terraform/0.12.28/) - for local development
+    <details><summary>
+    Deployed resources
+    </summary>
+
+    1. S3 Bucket
+       - Name: `${app_name}-state-${environment}`
+       - Versioning: `Enabled`
+       - Access: `Block All`
+    1. DynamoDB Table
+       - Name: `${app_name}-state-lock-${environment}`
+       - Primary Key (partition key): `LockID`
+       - Billing Mode: `PROVISIONED`
+       - Read/Write capacity: `1`
+
+    </details>
+
+1.  Find and Replace `tfmonorepo` and `eu-west-1`
+    1. `./live/backend.tf.${environment}`
+    1. `./live/variables.tf`
+    1. `./.${ci-cd-tool}.yml`
+1.  CI/CD setup
+
+    1.  Sign in with your GitHub account to [drone.io](https://cloud.drone.io/login) and activate your newly created git repository
+    1.  AWS Console > Create an IAM User for CI/CD, per environment
+
+        - Name: `cicd-${environment}`
+        - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#recommendations))
+
+    1.  drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
+
+        - aws_access_key_id\_**development**
+        - aws_secret_access_key\_**development**
+
+         <details><summary>
+         Drone Secrets Example - Expand/Collapse
+         </summary>
+
+        ![drone-secrets-example](https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
+
+           </details>
+
+        <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example above
+
+1.  Commit and push the changes to your repository
+
+    ```bash
+    $ git checkout development
+    $ git add .
+    $ git commit -m "deploy development"
+    $ git push -U origin development
+    ```
+
+1.  Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-monorepo](https://cloud.drone.io/unfor19/terraform-monorepo/9/1/2)
+
+1.  Promote `development` environment to `staging`
+
+    ```bash
+    $ git checkout staging
+    $ git merge development
+    $ git push
+    ```
+
+1.  That's it, you've just deployed two identical environments, go ahead and do the same with `production`
 
 ## Repository Structure
 
 - `./`
-  - Contains `README.md`, `.gitignore`, `LICENSE` and `.${cd-cd-tool}.yml`
-  - `.${cd-cd-tool}.yml` - In this repository we're using [drone.io](https://drone.io)
+  - Contains `README.md`, `.gitignore`, `LICENSE` and `.${ci-cd-tool}.yml`
+  - `.${ci-cd-tool}.yml` - In this repository we're using [drone.io](https://drone.io)
 - `./live/`
   - Contains `*.tf`, `*.tpl` and `backend.tf.${environment}`
   - `*.tf` - The infrastructure, **don't** put `modules` in this folder
@@ -71,7 +115,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 - `./cloudformation/`
   - Contains CloudFormation templates (`*.yml`), for example `cfn-backend.yml`
 - `./scripts/`
-  - Contains scripts which improve the development process (`*.sh`)
+  - Contains scripts which eases the development process (`*.sh`)
 
 ## Recommendations
 
@@ -79,11 +123,12 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 - **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, `prod` or using `master` for `production`. Using full names is more explicit and clearer
 - **Resources Names** should **contain the environment name**, for example `production`
+- [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
 
 ### CI/CD
 
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
-- **Unlock Terraform tfstate** by deleting the md5 item from the state's DynamoDB table, for example
+- **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
   - Table Name: `${app_name}-state-lock-${environment}`
   - Item Name: `${app_name}-state-${environment}/terraform.tfstate-md5`
 
@@ -94,7 +139,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 ### Git
 
-- **Default Branch** is **development** to avoid confusion
+- **Default Branch** is **development** since this is the branch that is mostly used
 - **Branches Names** per environment makes the whole CI/CD process simpler
 - **Feature Branch** per environment **complicates** the whole process, though it is possible, it's not recommended
 - **Updating Environment Infrastructure** is possible with **git merge**
