@@ -39,6 +39,7 @@ jobs:
         run: |
           export AWS_ACCESS_KEY_ID=${{ secrets[env.AWS_ACCESS_KEY_ID_SECRET_NAME] }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets[env.AWS_SECRET_ACCESS_KEY_SECRET_NAME] }}
+          cd ${GITHUB_REF_SLUG}/
           terraform version
           rm -rf .terraform
           terraform init -input=false
