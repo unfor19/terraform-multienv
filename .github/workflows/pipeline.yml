@@ -32,8 +32,8 @@ jobs:
           version: 0.12.28
       - name: terraform-apply
         env:
-          AWS_ACCESS_KEY_ID: {{ secret.AWS_ACCESS_KEY_ID_${GITHUB_REF#refs/heads/} }}
-          AWS_SECRET_ACCESS_KEY: {{ secret.AWS_SECRET_ACCESS_KEY_${GITHUB_REF#refs/heads/} }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_${GITHUB_REF#refs/heads/} }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_${GITHUB_REF#refs/heads/} }}
         run: |
           terraform version
           rm -rf .terraform
