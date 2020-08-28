@@ -1,4 +1,5 @@
 .*
+!.github*
 !.*ignore*
 !.drone.yml
 *.terraform

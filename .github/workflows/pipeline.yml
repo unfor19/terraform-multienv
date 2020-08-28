@@ -1,0 +1,46 @@
+name: pipeline
+
+on:
+  push:
+    branches: [development, staging, production]
+    paths-ignore:
+      - "README.md"
+
+jobs:
+  test-ubuntu:
+    runs-on: ubuntu-latest
+
+    env:
+      ### -----------------------
+      ### Available in all steps, change app_name to your app_name
+      TF_VAR_app_name: tfmonorepo
+      BRANCH_NAME: ${GITHUB_REF#refs/heads/}
+      ### -----------------------
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: prepare-files-folders
+        run: |
+          mkdir -p ${BRANCH_NAME}/
+          cp live/*.${BRANCH_NAME} ${BRANCH_NAME}/
+          cp live/*.tf ${BRANCH_NAME}/
+          cp live/*.tpl ${BRANCH_NAME}/ 2>/dev/null || true
+          mv ${BRANCH_NAME}/backend.tf.${BRANCH_NAME} ${BRANCH_NAME}/backend.tf
+      - name: install-terraform
+        uses: little-core-labs/install-terraform@v1
+        version: 0.12.28
+      - name: terraform-apply
+        env:
+          AWS_ACCESS_KEY_ID:
+            from_secret: AWS_ACCESS_KEY_ID_${GITHUB_REF#refs/heads/}
+          AWS_SECRET_ACCESS_KEY:
+            from_secret: AWS_SECRET_ACCESS_KEY_${GITHUB_REF#refs/heads/}
+        run: |
+          terraform version
+          rm -rf .terraform
+          terraform init -input=false
+          terraform get
+          terraform validate
+          terraform plan -out=plan.tfout -var environment=${BRANCH_NAME}
+          terraform apply -auto-approve plan.tfout 
+          rm -rf .terraform
