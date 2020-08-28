@@ -23,6 +23,7 @@ variable "cidr_ab" {
 }
 
 locals {
+  prefix   = "${var.app_name}-${var.environment}"
   vpc_cidr = "${lookup(var.cidr_ab, var.environment)}.0.0/16"
   public_subnets = [
     "${lookup(var.cidr_ab, var.environment)}.1.0/24",
@@ -32,4 +33,5 @@ locals {
     "${lookup(var.cidr_ab, var.environment)}.10.0/24",
     "${lookup(var.cidr_ab, var.environment)}.20.0/24",
   ]
+  availability_zones = ["${var.region}a", "${var.region}b"]
 }
