@@ -34,7 +34,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
     To deploy in other regions, replace AWS_REGION with the region's code.
 
-    `bash https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
+    `https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
 
     </details>
 
@@ -64,7 +64,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
     1.  AWS Console > Create an IAM User for CI/CD, per environment
 
         - Name: `cicd-${environment}`
-        - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#recommendations))
+        - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#security))
 
     1.  drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
 
@@ -125,7 +125,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 - **Resources Names** should **contain the environment name**, for example `production`
 - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
 
-### CI/CD
+### Terraform
 
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
 - **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
