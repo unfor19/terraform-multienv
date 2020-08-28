@@ -1,6 +1,7 @@
 .*
-!.github*
 !.*ignore*
+!.github/
+!.circleci/
 !.drone.yml
 *.terraform
 *.idea
