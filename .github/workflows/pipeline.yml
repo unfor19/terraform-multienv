@@ -2,7 +2,8 @@ name: pipeline
 
 on:
   push:
-    branches: [development, staging, production]
+    branches: [github-action]
+    # branches: [development, staging, production]
     paths-ignore:
       - "README.md"
 
