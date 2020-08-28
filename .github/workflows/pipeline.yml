@@ -14,27 +14,30 @@ jobs:
       ### -----------------------
       ### Available in all steps, change app_name to your app_name
       TF_VAR_app_name: tfmonorepo
-      BRANCH_NAME: ${GITHUB_REF#refs/heads/}
       ### -----------------------
 
     steps:
       - uses: actions/checkout@v2
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v2.x
       - name: prepare-files-folders
         run: |
-          mkdir -p ${BRANCH_NAME}/
-          cp live/*.${BRANCH_NAME} ${BRANCH_NAME}/
-          cp live/*.tf ${BRANCH_NAME}/
-          cp live/*.tpl ${BRANCH_NAME}/ 2>/dev/null || true
-          mv ${BRANCH_NAME}/backend.tf.${BRANCH_NAME} ${BRANCH_NAME}/backend.tf
+          mkdir -p ${GITHUB_REF_SLUG}/
+          cp live/*.${GITHUB_REF_SLUG} ${GITHUB_REF_SLUG}/
+          cp live/*.tf ${GITHUB_REF_SLUG}/
+          cp live/*.tpl ${GITHUB_REF_SLUG}/ 2>/dev/null || true
+          mv ${GITHUB_REF_SLUG}/backend.tf.${GITHUB_REF_SLUG} ${GITHUB_REF_SLUG}/backend.tf
       - name: install-terraform
         uses: little-core-labs/install-terraform@v1
         with:
           version: 0.12.28
       - name: terraform-apply
         env:
-          AWS_ACCESS_KEY_ID_SECRET_NAME: AWS_ACCESS_KEY_ID_${GITHUB_REF#refs/heads/}
-          AWS_SECRET_ACCESS_KEY_SECRET_NAME: AWS_SECRET_ACCESS_KEY_${GITHUB_REF#refs/heads/}
+          AWS_ACCESS_KEY_ID_SECRET_NAME: AWS_ACCESS_KEY_ID_
+          AWS_SECRET_ACCESS_KEY_SECRET_NAME: AWS_SECRET_ACCESS_KEY_
         run: |
+          AWS_ACCESS_KEY_ID_SECRET_NAME+=${GITHUB_REF_SLUG}
+          AWS_SECRET_ACCESS_KEY_SECRET_NAME+=${GITHUB_REF_SLUG}
           export AWS_ACCESS_KEY_ID=${{ secrets[env.AWS_ACCESS_KEY_ID_SECRET_NAME] }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets[env.AWS_SECRET_ACCESS_KEY_SECRET_NAME] }}
           terraform version
@@ -42,6 +45,6 @@ jobs:
           terraform init -input=false
           terraform get
           terraform validate
-          terraform plan -out=plan.tfout -var environment=${BRANCH_NAME}
+          terraform plan -out=plan.tfout -var environment=${GITHUB_REF_SLUG}
           terraform apply -auto-approve plan.tfout 
           rm -rf .terraform
