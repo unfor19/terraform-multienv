@@ -34,7 +34,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
     To deploy in other regions, replace AWS_REGION with the region's code.
 
-    `bash https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
+    `https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
 
     </details>
 
@@ -64,7 +64,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
     1.  AWS Console > Create an IAM User for CI/CD, per environment
 
         - Name: `cicd-${environment}`
-        - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#recommendations))
+        - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#security))
 
     1.  drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
 
@@ -113,7 +113,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
   - `*.tpl` - In case you're using [templates files](https://www.terraform.io/docs/configuration/functions/templatefile.html)
   - `*.backend.tf.${environment}` - Hardcoded values of the terraform backend per environment
 - `./cloudformation/`
-  - Contains CloudFormation templates (`*.yml`), for example `cfn-backend.yml`
+  - Contains CloudFormation templates (`*.yml`), for example [cfn-tfbackend.yml](https://github.com/unfor19/terraform-monorepo/blob/development/cloudformation/cfn-tfbackend.yml)
 - `./scripts/`
   - Contains scripts which eases the development process (`*.sh`)
 
@@ -125,8 +125,9 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 - **Resources Names** should **contain the environment name**, for example `production`
 - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
 
-### CI/CD
+### Terraform
 
+- **Remote Backend** is deployed with a CloudFormation template to avoid the chicken and the egg situation
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
 - **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
   - Table Name: `${app_name}-state-lock-${environment}`
@@ -142,7 +143,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 - **Default Branch** is **development** since this is the branch that is mostly used
 - **Branches Names** per environment makes the whole CI/CD process simpler
 - **Feature Branch** per environment **complicates** the whole process, though it is possible, it's not recommended
-- **Updating Environment Infrastructure** is possible with **git merge**
+- **Updating Environment Infrastructure** is done with **git push** and **git merge**, this way we can audit the changes
 
 ### Repository Structure
 
