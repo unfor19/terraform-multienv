@@ -113,7 +113,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
   - `*.tpl` - In case you're using [templates files](https://www.terraform.io/docs/configuration/functions/templatefile.html)
   - `*.backend.tf.${environment}` - Hardcoded values of the terraform backend per environment
 - `./cloudformation/`
-  - Contains CloudFormation templates (`*.yml`), for example `cfn-backend.yml`
+  - Contains CloudFormation templates (`*.yml`), for example [cfn-tfbackend.yml](https://github.com/unfor19/terraform-monorepo/blob/development/cloudformation/cfn-tfbackend.yml)
 - `./scripts/`
   - Contains scripts which eases the development process (`*.sh`)
 
@@ -127,6 +127,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 ### Terraform
 
+- **Remote Backend** is deployed with a CloudFormation template to avoid the chicken and the egg situation
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
 - **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
   - Table Name: `${app_name}-state-lock-${environment}`
