@@ -28,13 +28,12 @@ jobs:
           mv ${BRANCH_NAME}/backend.tf.${BRANCH_NAME} ${BRANCH_NAME}/backend.tf
       - name: install-terraform
         uses: little-core-labs/install-terraform@v1
-        version: 0.12.28
+        with:
+          version: 0.12.28
       - name: terraform-apply
         env:
-          AWS_ACCESS_KEY_ID:
-            from_secret: AWS_ACCESS_KEY_ID_${GITHUB_REF#refs/heads/}
-          AWS_SECRET_ACCESS_KEY:
-            from_secret: AWS_SECRET_ACCESS_KEY_${GITHUB_REF#refs/heads/}
+          AWS_ACCESS_KEY_ID: {{ secret.AWS_ACCESS_KEY_ID_${GITHUB_REF#refs/heads/} }}
+          AWS_SECRET_ACCESS_KEY: {{ secret.AWS_SECRET_ACCESS_KEY_${GITHUB_REF#refs/heads/} }}
         run: |
           terraform version
           rm -rf .terraform
