@@ -142,7 +142,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 - **Default Branch** is **development** since this is the branch that is mostly used
 - **Branches Names** per environment makes the whole CI/CD process simpler
 - **Feature Branch** per environment **complicates** the whole process, though it is possible, it's not recommended
-- **Updating Environment Infrastructure** is possible with **git merge**
+- **Updating Environment Infrastructure** is done with **git push** and **git merge**, this way we can audit the changes
 
 ### Repository Structure
 
