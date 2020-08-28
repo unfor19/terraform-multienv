@@ -32,6 +32,7 @@ jobs:
     docker:
       - image: unfor19/terraform-alpine:0.12.28
     steps:
+      - checkout
       - run:
           name: terraform-apply
           command: |
