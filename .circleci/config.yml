@@ -18,4 +18,4 @@ jobs:
       - run:
           name: terraform-apply
           command: |
-            docker run --rm -w="${CIRCLE_WORKING_DIRECTORY}" -e CIRCLE_BRANCH -v ${CIRCLE_WORKING_DIRECTORY}/:${CIRCLE_WORKING_DIRECTORY}/ unfor19/terraform-alpine:0.12.28 /code/tf-apply-circleci.sh
+            docker run --rm -w="/code" -e CIRCLE_BRANCH -v "${HOME}"/project/:/code/ unfor19/terraform-alpine:0.12.28 /code/tf-apply-circleci.sh
