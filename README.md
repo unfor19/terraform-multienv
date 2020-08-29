@@ -2,6 +2,18 @@
 
 A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining cloud infrastructure with [Terraform](https://www.terraform.io/). This template includes a CI/CD process, that applies the infrastructure in AWS account, implemented with [drone](https://drone.io).
 
+<table>
+   <tr>
+      <td>development</td><td><a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-monorepo/status.svg?ref=refs/heads/development" /></a></td>
+   </tr>
+   <tr>
+      <td>staging</td><td><a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-monorepo/status.svg?ref=refs/heads/staging" /></a></td>
+   </tr>
+   <tr>
+      <td>production</td><td><a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-monorepo/status.svg?ref=refs/heads/production" /></a></td>
+   </tr>
+</table>
+
 To get started with Terraform, watch this webinar - [Getting started with Terraform in AWS
 ](https://www.youtube.com/watch?v=cBDmoC7QonA)
 
