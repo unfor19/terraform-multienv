@@ -1,6 +1,6 @@
 # terraform-monorepo
 
-A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining cloud infrastructure with [Terraform](https://www.terraform.io/). This template includes a CI/CD process, that applies the infrastructure in AWS account, implemented with [drone](https://drone.io).
+A template for maintaining a multiple environments infrastructure with [Terraform](https://www.terraform.io/). This template includes a CI/CD process, that applies the infrastructure in an AWS account.
 
 <table>
    <tr>
@@ -14,8 +14,19 @@ A [mono-repo](https://en.wikipedia.org/wiki/Monorepo) template for maintaining c
    </tr>
 </table>
 
-To get started with Terraform, watch this webinar - [Getting started with Terraform in AWS
-](https://www.youtube.com/watch?v=cBDmoC7QonA)
+<table>
+   <tr>
+      <td align="center">drone.io<br><br>
+         <a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img width="100px" height="100px" src="https://bargs.link/assets/droneio-logo.png" alt="drone.io" /></a>
+      </td>
+      <td align="center">GitHub Actions<br><br>
+         <a href="https://github.com/unfor19/terraform-monorepo/actions"><img width="100px" height="100px" src="https://bargs.link/assets/githubactions-logo.png" alt="drone.io" /></a>
+      </td>
+      <td align="center">CircleCI<br><br>
+         <a href="https://app.circleci.com/pipelines/github/unfor19/terraform-monorepo"><img width="100px" height="100px" src="https://bargs.link/assets/circleci-logo.png" alt="drone.io" /></a>
+      </td>
+   </tr>
+</table>
 
 ## Assumptions
 
@@ -137,7 +148,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 ### Generic
 
-- **Naming Convention** should be consistent across your application and infrastructure. Avoid using short names like `dev`, `develop`, `prod` or using `master` for `production`. Using full names is more explicit and clearer
+- **Naming Convention** should be consistent across your application and infrastructure. Avoid using `master` for `production`. A recommended set of names: `dev`, `tst` (qa), `stg` and `prd`. Using shorter names is preferred, since some AWS resources' names have a character limit. I'll probably change this repository's branches soon
 - **Resources Names** should **contain the environment name**, for example `production`
 - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
 - **Using Multiple AWS Accounts** for hosting different environments is recommended.<br>The way I implement it - development and `staging` in the same account and `production` in a different account
@@ -152,7 +163,7 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 ### Security
 
-- **AdministratorAccess Permission for CI/CD** should be used only in early development stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege)
+- **AdministratorAccess Permission for CI/CD** should be used only in early development stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege). Use CloudTrail to figure out which IAM policies the CI/CD user needs, a great tool for that - [trailscraper](https://github.com/flosell/trailscraper)
 - **IAM Roles** for self-hosted CI/CD runners (nodes) are **preferred over AWS key/secret**
 
 ### Git
@@ -166,6 +177,12 @@ To get started with Terraform, watch this webinar - [Getting started with Terraf
 
 - **Modules** should be stored in a **different repository**
 - **Infrastructure Repository** should **separated** from the **Frontend and Backend Respositories**
+
+## References
+
+- To get started with Terraform, watch this webinar - [Getting started with Terraform in AWS
+  ](https://www.youtube.com/watch?v=cBDmoC7QonA)
+- Terraform Best Practices - [ozbillwang/terraform-best-practices](https://github.com/ozbillwang/terraform-best-practices)
 
 ## Authors
 
