@@ -35,7 +35,7 @@ steps:
         - stg
         - prd
         - feature/*
-    image: ubuntu:18.04
+    image: xueshanf/awscli:alpine-3.11
     commands:
       - bash scripts/prepare-files-folders.sh
 
