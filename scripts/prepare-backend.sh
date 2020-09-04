@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 if [[ -z "$TF_VAR_app_name" ]]; then
     echo "[ERROR] Must set TF_VAR_app_name environment variable"
     exit
