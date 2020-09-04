@@ -41,7 +41,8 @@ steps:
       actions:
         - validate
         - plan
-        - apply
+        # - apply
+        - destroy
       root_dir: ${DRONE_BRANCH}/
       vars:
         environment: ${DRONE_BRANCH}
