@@ -1,29 +1,29 @@
-# terraform-monorepo
+# terraform-multienv
 
 A template for maintaining a multiple environments infrastructure with [Terraform](https://www.terraform.io/). This template includes a CI/CD process, that applies the infrastructure in an AWS account.
 
 <table>
    <tr>
-      <td>development</td><td><a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-monorepo/status.svg?ref=refs/heads/development" /></a></td>
+      <td>development</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/development" /></a></td>
    </tr>
    <tr>
-      <td>staging</td><td><a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-monorepo/status.svg?ref=refs/heads/staging" /></a></td>
+      <td>staging</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/staging" /></a></td>
    </tr>
    <tr>
-      <td>production</td><td><a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-monorepo/status.svg?ref=refs/heads/production" /></a></td>
+      <td>production</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/production" /></a></td>
    </tr>
 </table>
 
 <table>
    <tr>
       <td align="center">drone.io<br><br>
-         <a href="https://cloud.drone.io/unfor19/terraform-monorepo"><img width="100px" height="100px" src="https://bargs.link/assets/droneio-logo.png" alt="drone.io" /></a>
+         <a href="https://cloud.drone.io/unfor19/terraform-multienv"><img width="100px" height="100px" src="https://bargs.link/assets/droneio-logo.png" alt="drone.io" /></a>
       </td>
       <td align="center">GitHub Actions<br><br>
-         <a href="https://github.com/unfor19/terraform-monorepo/actions"><img width="100px" height="100px" src="https://bargs.link/assets/githubactions-logo.png" alt="drone.io" /></a>
+         <a href="https://github.com/unfor19/terraform-multienv/actions"><img width="100px" height="100px" src="https://bargs.link/assets/githubactions-logo.png" alt="drone.io" /></a>
       </td>
       <td align="center">CircleCI<br><br>
-         <a href="https://app.circleci.com/pipelines/github/unfor19/terraform-monorepo"><img width="100px" height="100px" src="https://bargs.link/assets/circleci-logo.png" alt="drone.io" /></a>
+         <a href="https://app.circleci.com/pipelines/github/unfor19/terraform-multienv"><img width="100px" height="100px" src="https://bargs.link/assets/circleci-logo.png" alt="drone.io" /></a>
       </td>
    </tr>
 </table>
@@ -41,19 +41,19 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 - Variables
 
-  - \${app_name} = `tfmonorepo`
+  - \${app_name} = `tfmultienv`
   - \${environment} = `development` or `staging` or `production`
   - \${ci-cd-tool} = `drone`
 
 ## Getting Started
 
 1. We're going to create a VPC, Subnets and Routing Tables per environment (all free)
-1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-monorepo/generate)
+1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-multienv/generate)
 1. Deploy Terraform Remote Backend - Create an S3 bucket to store `tfstate` and a DynamoDB Table for [state locking](https://www.terraform.io/docs/state/locking.html), per environment
 
-   [![Launch in Ireland](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Ireland (eu-west-1)](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
+   [![Launch in Ireland](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Ireland (eu-west-1)](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
 
-   [![Launch in Virginia](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Virginia (us-east-1)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
+   [![Launch in Virginia](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Virginia (us-east-1)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
 
    <details><summary>
    Other regions
@@ -61,7 +61,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
    To deploy in other regions, replace AWS_REGION with the region's code.
 
-   `https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
+   `https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
 
    </details>
 
@@ -81,7 +81,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
    </details>
 
-1. Find and Replace `tfmonorepo` and `eu-west-1`
+1. Find and Replace `tfmultienv` and `eu-west-1`
    1. `./live/backend.tf.${environment}`
    1. `./live/variables.tf`
    1. `./.${ci-cd-tool}.yml`
@@ -91,7 +91,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    1. AWS Console > Create an IAM User for CI/CD, per environment
 
       - Name: `cicd-${environment}`
-      - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-monorepo#security))
+      - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
 
    1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
 
@@ -102,7 +102,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
        Drone Secrets Example - Expand/Collapse
        </summary>
 
-      ![drone-secrets-example](https://unfor19-terraform-monorepo.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
+      ![drone-secrets-example](https://unfor19-terraform-multienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
 
          </details>
 
@@ -117,7 +117,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    $ git push -U origin development
    ```
 
-1. Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-monorepo](https://cloud.drone.io/unfor19/terraform-monorepo/9/1/2)
+1. Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://cloud.drone.io/unfor19/terraform-multienv/9/1/2)
 
 1. Promote `development` environment to `staging`
 
@@ -140,7 +140,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
   - `*.tpl` - In case you're using [templates files](https://www.terraform.io/docs/configuration/functions/templatefile.html)
   - `*.backend.tf.${environment}` - Hardcoded values of the terraform backend per environment
 - `./cloudformation/`
-  - Contains CloudFormation templates (`*.yml`), for example [cfn-tfbackend.yml](https://github.com/unfor19/terraform-monorepo/blob/development/cloudformation/cfn-tfbackend.yml)
+  - Contains CloudFormation templates (`*.yml`), for example [cfn-tfbackend.yml](https://github.com/unfor19/terraform-multienv/blob/development/cloudformation/cfn-tfbackend.yml)
 - `./scripts/`
   - Contains scripts which eases the development process (`*.sh`)
 
@@ -190,4 +190,4 @@ Created and maintained by [Meir Gabay](https://github.com/unfor19)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/unfor19/terraform-monorepo/blob/master/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/unfor19/terraform-multienv/blob/master/LICENSE) file for details
