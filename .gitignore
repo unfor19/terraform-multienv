@@ -3,9 +3,12 @@
 !.github/
 !.circleci/
 !.drone.yml
-*.terraform
+**/*.terraform
 *.idea
 *tfstate*
+dev/
+stg/
+prd/
 development/
 staging/
 prod/

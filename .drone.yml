@@ -6,22 +6,38 @@ environment:
   ### -----------------------
   ### Available in all steps, change app_name to your app_name
   TF_VAR_app_name: tfmultienv
+  AWS_REGION: &AWS_REGION eu-west-1
   ### -----------------------
+  AWS_DEFAULT_REGION: *AWS_REGION
 
 steps:
-  - name: prepare-files-folders
+  - name: prepare-backend
     when:
       branch:
         - dev
         - stg
         - prd
-    image: ubuntu:18.04
+        - feature/*
+    image: xueshanf/awscli:alpine-3.11
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: aws_access_key_id_${DRONE_BRANCH}
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: aws_secret_access_key_${DRONE_BRANCH}
     commands:
-      - mkdir -p ${DRONE_BRANCH}/
-      - cp live/*.${DRONE_BRANCH} ${DRONE_BRANCH}/
-      - cp live/*.tf ${DRONE_BRANCH}/
-      - cp live/*.tpl ${DRONE_BRANCH}/ 2>/dev/null || true
-      - mv ${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH} ${DRONE_BRANCH}/backend.tf
+      - /bin/bash scripts/prepare-backend.sh
+  - name: prepare-files-folders
+    depends_on:
+      - prepare-backend
+    when:
+      branch:
+        - dev
+        - stg
+        - prd
+        - feature/*
+    image: xueshanf/awscli:alpine-3.11
+    commands:
+      - /bin/bash scripts/prepare-files-folders.sh
 
   - name: terraform-apply
     when:
@@ -29,6 +45,7 @@ steps:
         - dev
         - stg
         - prd
+        - feature/*
     depends_on:
       - prepare-files-folders
     image: unfor19/drone-terraform:dev

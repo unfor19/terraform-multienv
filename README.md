@@ -92,8 +92,9 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
       - Name: `cicd-${environment}`
       - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
+      - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) with _Programmatic Access_ and save them in a safe place, we'll use them in the next step
 
-   1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
+   1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS Access Keys per environment, for example
 
       - aws_access_key_id\_**dev**
       - aws_secret_access_key\_**dev**
