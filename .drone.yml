@@ -12,9 +12,9 @@ steps:
   - name: prepare-files-folders
     when:
       branch:
-        - development
-        - staging
-        - production
+        - dev
+        - stg
+        - prd
     image: ubuntu:18.04
     commands:
       - mkdir -p ${DRONE_BRANCH}/
@@ -26,9 +26,9 @@ steps:
   - name: terraform-apply
     when:
       branch:
-        - development
-        - staging
-        - production
+        - dev
+        - stg
+        - prd
     depends_on:
       - prepare-files-folders
     image: unfor19/drone-terraform:dev
@@ -41,8 +41,7 @@ steps:
       actions:
         - validate
         - plan
-        # - apply
-        - destroy
+        - apply
       root_dir: ${DRONE_BRANCH}/
       vars:
         environment: ${DRONE_BRANCH}
