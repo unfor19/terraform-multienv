@@ -48,9 +48,9 @@ steps:
     image: xueshanf/awscli:alpine-3.11
     environment:
       AWS_ACCESS_KEY_ID:
-        from_secret: aws_access_key_id_${DRONE_BRANCH//\\/-}
+        from_secret: aws_access_key_id_${DRONE_BRANCH//\//-}
       AWS_SECRET_ACCESS_KEY:
-        from_secret: aws_secret_access_key_${DRONE_BRANCH//\\/-}
+        from_secret: aws_secret_access_key_${DRONE_BRANCH//\//-}
     commands:
       - /bin/bash scripts/prepare-backend.sh
 
@@ -73,9 +73,9 @@ steps:
         - validate
         - plan
         - apply
-      root_dir: ${DRONE_BRANCH//\\/-}/
+      root_dir: ${DRONE_BRANCH//\//-}/
       vars:
-        environment: ${DRONE_BRANCH//\\/-}
+        environment: ${DRONE_BRANCH//\//-}
 
   - name: terraform-apply-stg-prd
     depends_on:
@@ -88,14 +88,14 @@ steps:
     image: unfor19/drone-terraform:dev
     environment:
       AWS_ACCESS_KEY_ID:
-        from_secret: aws_access_key_id_${DRONE_BRANCH//\\/-}
+        from_secret: aws_access_key_id_${DRONE_BRANCH//\//-}
       AWS_SECRET_ACCESS_KEY:
-        from_secret: aws_secret_access_key_${DRONE_BRANCH//\\/-}
+        from_secret: aws_secret_access_key_${DRONE_BRANCH//\//-}
     settings:
       actions:
         - validate
         - plan
         - apply
-      root_dir: ${DRONE_BRANCH//\\/-}/
+      root_dir: ${DRONE_BRANCH//\//-}/
       vars:
-        environment: ${DRONE_BRANCH//\\/-}
+        environment: ${DRONE_BRANCH//\//-}
