@@ -6,8 +6,9 @@ environment:
   ### -----------------------
   ### Available in all steps, change app_name to your app_name
   TF_VAR_app_name: tfmultienv
-  AWS_REGION: eu-west-1
+  AWS_REGION: &AWS_REGION eu-west-1
   ### -----------------------
+  AWS_DEFAULT_REGION: *AWS_REGION
 
 steps:
   - name: prepare-backend
