@@ -1,6 +1,6 @@
 variable "app_name" {
   type    = string
-  default = "tfmonorepo"
+  default = "tfmultienv"
 }
 
 variable "region" {
@@ -10,15 +10,15 @@ variable "region" {
 
 variable "environment" {
   type        = string
-  description = "development, staging, production"
+  description = "dev, stg, prd"
 }
 
 variable "cidr_ab" {
   type = map
   default = {
-    development = "10.1"
-    staging     = "10.2"
-    production  = "10.3"
+    dev = "10.1"
+    stg = "10.2"
+    prd = "10.3"
   }
 }
 
