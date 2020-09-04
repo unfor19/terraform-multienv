@@ -4,13 +4,13 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 <table>
    <tr>
-      <td>development</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/development" /></a></td>
+      <td>dev</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/dev" /></a></td>
    </tr>
    <tr>
-      <td>staging</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/staging" /></a></td>
+      <td>stg</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/stg" /></a></td>
    </tr>
    <tr>
-      <td>production</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/production" /></a></td>
+      <td>prd</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/prd" /></a></td>
    </tr>
 </table>
 
@@ -30,19 +30,19 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 ## Assumptions
 
-- Branches names are aligned with environments names, for example `development`, `staging` and `production`
+- Branches names are aligned with environments names, for example `dev`, `stg` and `prd`
 - The CI/CD tool supports the variable `${BRANCH_NAME}`, for example `${DRONE_BRANCH}`
 
 - Multiple Environments
 
-  - You have multiple environments, for example `development`, `staging` and `production`
+  - You have multiple environments, for example `dev`, `stg` and `prd`
   - All environments are maintained in the same git repository
   - Hosting environments in different AWS account is supported (and recommended)
 
 - Variables
 
   - \${app_name} = `tfmultienv`
-  - \${environment} = `development` or `staging` or `production`
+  - \${environment} = `dev` or `stg` or `prd`
   - \${ci-cd-tool} = `drone`
 
 ## Getting Started
@@ -95,14 +95,14 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
    1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS credentials per environment, for example
 
-      - aws_access_key_id\_**development**
-      - aws_secret_access_key\_**development**
+      - aws_access_key_id\_**dev**
+      - aws_secret_access_key\_**dev**
 
        <details><summary>
        Drone Secrets Example - Expand/Collapse
        </summary>
 
-      ![drone-secrets-example](https://unfor19-terraform-multienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
+      ![drone-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
 
          </details>
 
@@ -111,23 +111,23 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 1. Commit and push the changes to your repository
 
    ```bash
-   $ git checkout development
+   $ git checkout dev
    $ git add .
-   $ git commit -m "deploy development"
-   $ git push -U origin development
+   $ git commit -m "deploy dev"
+   $ git push -U origin dev
    ```
 
 1. Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://cloud.drone.io/unfor19/terraform-multienv/9/1/2)
 
-1. Promote `development` environment to `staging`
+1. Promote `dev` environment to `stg`
 
    ```bash
-   $ git checkout staging
-   $ git merge development
+   $ git checkout stg
+   $ git merge dev
    $ git push
    ```
 
-1. That's it, you've just deployed two identical environments, go ahead and do the same with `production`
+1. That's it, you've just deployed two identical environments, go ahead and do the same with `prd`
 
 ## Repository Structure
 
@@ -140,18 +140,18 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
   - `*.tpl` - In case you're using [templates files](https://www.terraform.io/docs/configuration/functions/templatefile.html)
   - `*.backend.tf.${environment}` - Hardcoded values of the terraform backend per environment
 - `./cloudformation/`
-  - Contains CloudFormation templates (`*.yml`), for example [cfn-tfbackend.yml](https://github.com/unfor19/terraform-multienv/blob/development/cloudformation/cfn-tfbackend.yml)
+  - Contains CloudFormation templates (`*.yml`), for example [cfn-tfbackend.yml](https://github.com/unfor19/terraform-multienv/blob/dev/cloudformation/cfn-tfbackend.yml)
 - `./scripts/`
-  - Contains scripts which eases the development process (`*.sh`)
+  - Contains scripts which eases the dev process (`*.sh`)
 
 ## Recommendations
 
 ### Generic
 
-- **Naming Convention** should be consistent across your application and infrastructure. Avoid using `master` for `production`. A recommended set of names: `dev`, `tst` (qa), `stg` and `prd`. Using shorter names is preferred, since some AWS resources' names have a character limit. I'll probably change this repository's branches soon
-- **Resources Names** should **contain the environment name**, for example `production`
+- **Naming Convention** should be consistent across your application and infrastructure. Avoid using `master` for `production`. A recommended set of names: `dev`, `tst` (qa), `stg` and `prd`. Using shorter names is preferred, since some AWS resources' names have a character limit
+- **Resources Names** should **contain the environment name**, for example `tfmultienv-natgateway-prd`
 - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
-- **Using Multiple AWS Accounts** for hosting different environments is recommended.<br>The way I implement it - development and `staging` in the same account and `production` in a different account
+- **Using Multiple AWS Accounts** for hosting different environments is recommended.<br>The way I implement it - `dev` and `stg` in the same account and `prd` in a different account
 
 ### Terraform
 
@@ -163,12 +163,12 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 ### Security
 
-- **AdministratorAccess Permission for CI/CD** should be used only in early development stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege). Use CloudTrail to figure out which IAM policies the CI/CD user needs, a great tool for that - [trailscraper](https://github.com/flosell/trailscraper)
+- **AdministratorAccess Permission for CI/CD** should be used only in early dev stages. After running a few successful deployments, make sure you **restrict the permissions** per environment and follow the [least-previleged best practice](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege). Use CloudTrail to figure out which IAM policies the CI/CD user needs, a great tool for that - [trailscraper](https://github.com/flosell/trailscraper)
 - **IAM Roles** for self-hosted CI/CD runners (nodes) are **preferred over AWS key/secret**
 
 ### Git
 
-- **Default Branch** is **development** since this is the branch that is mostly used
+- **Default Branch** is **dev** since this is the branch that is mostly used
 - **Branches Names** per environment makes the whole CI/CD process **simpler**
 - **Feature Branch** per environment **complicates** the whole process, since creating an environment per feature-branch means creating a Terraform Backend per feature-branch. Though it is possible, it's not recommended
 - **Updating Environment Infrastructure** is done with **git push** and **git merge**, this way we can audit the changes
