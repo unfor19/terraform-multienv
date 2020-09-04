@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
     region         = "eu-west-1"
-    bucket         = "tfmonorepo-state-dev"
+    bucket         = "tfmultienv-state-dev"
     key            = "terraform.tfstate"
-    dynamodb_table = "tfmonorepo-state-lock-dev"
+    dynamodb_table = "tfmultienv-state-lock-dev"
     encrypt        = false
   }
 }
