@@ -11,6 +11,9 @@ Parameters:
       - development
       - staging
       - production
+      - dev
+      - stg
+      - prd
     ConstraintDescription: Must be any of the available options
 
 Resources:
