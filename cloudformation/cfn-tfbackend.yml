@@ -7,13 +7,6 @@ Parameters:
   Environment:
     Type: String
     Description: Select the environment to deploy
-    AllowedValues:
-      - development
-      - staging
-      - production
-      - dev
-      - stg
-      - prd
     ConstraintDescription: Must be any of the available options
 
 Resources:
