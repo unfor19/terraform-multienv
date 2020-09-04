@@ -102,7 +102,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
        Drone Secrets Example - Expand/Collapse
        </summary>
 
-      ![drone-secrets-example](https://unfor19-terraform-multienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
+      ![drone-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
 
          </details>
 
