@@ -11,6 +11,7 @@ if [[ -z "$AWS_REGION" ]]; then
 fi
 
 BRANCH_NAME=$(git branch --show-current)
+BRANCH_NAME=${BRANCH_NAME//\//-}
 [[ -d "$BRANCH_NAME" ]] && rm -r "$BRANCH_NAME"
 mkdir -p "${BRANCH_NAME}"/
 cp live/* "${BRANCH_NAME}"/

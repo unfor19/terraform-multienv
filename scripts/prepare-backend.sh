@@ -11,6 +11,7 @@ if [[ -z "$AWS_REGION" ]]; then
 fi
 
 BRANCH_NAME=$(git branch --show-current)
+BRANCH_NAME=${BRANCH_NAME//\//-}
 _TEMPLATE_PATH="cloudformation/cfn-tfbackend.yml"
 _STACK_NAME="${TF_VAR_app_name}-${BRANCH_NAME}"
 _STACK_EXISTS=$(trap 'aws cloudformation describe-stacks --stack-name '"$_STACK_NAME"'' EXIT)
