@@ -5,7 +5,7 @@ name: terraform-infrastructure
 environment:
   ### -----------------------
   ### Available in all steps, change app_name to your app_name
-  TF_VAR_app_name: tfmonorepo
+  TF_VAR_app_name: tfmultienv
   ### -----------------------
 
 steps:
@@ -41,8 +41,7 @@ steps:
       actions:
         - validate
         - plan
-        # - apply
-        - destroy
+        - apply
       root_dir: ${DRONE_BRANCH}/
       vars:
         environment: ${DRONE_BRANCH}
