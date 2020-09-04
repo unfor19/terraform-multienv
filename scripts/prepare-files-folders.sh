@@ -1,8 +1,19 @@
 #!/bin/bash
-DRONE_BRANCH=$(git branch --show-current)
-[[ -d "$DRONE_BRANCH" ]] && rm -r "$DRONE_BRANCH"
-mkdir -p "${DRONE_BRANCH}/"
-cp live/*."${DRONE_BRANCH}" "${DRONE_BRANCH}/"
-cp live/*.tf "${DRONE_BRANCH}/"
-cp live/*.tpl "${DRONE_BRANCH}/" 2>/dev/null || true
-mv "${DRONE_BRANCH}/backend.tf.${DRONE_BRANCH}" "${DRONE_BRANCH}/backend.tf"
+if [[ -z "$TF_VAR_app_name" ]]; then
+    echo "[ERROR] Must set TF_VAR_app_name environment variable"
+    exit
+fi
+
+if [[ -z "$AWS_REGION" ]]; then
+    echo "[ERROR] Must set AWS_REGION environment variable"
+    exit
+fi
+
+BRANCH_NAME=$(git branch --show-current)
+[[ -d "$BRANCH_NAME" ]] && rm -r "$BRANCH_NAME"
+mkdir -p "${BRANCH_NAME}"/
+cp live/* "${BRANCH_NAME}"/
+sed -i.bak 's~AWS_REGION~'"$AWS_REGION"'~' "${BRANCH_NAME}"/backend.tf.tpl
+sed -i.bak 's~APP_NAME~'"$TF_VAR_app_name"'~' "${BRANCH_NAME}"/backend.tf.tpl
+sed -i.bak 's~ENVIRONMENT~'"$BRANCH_NAME"'~' "${BRANCH_NAME}"/backend.tf.tpl
+mv "${BRANCH_NAME}"/backend.tf.tpl "${BRANCH_NAME}"/backend.tf
