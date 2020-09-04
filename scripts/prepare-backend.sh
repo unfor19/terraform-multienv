@@ -14,7 +14,9 @@ BRANCH_NAME=$(git branch --show-current)
 BRANCH_NAME=${BRANCH_NAME//\//-}
 _TEMPLATE_PATH="cloudformation/cfn-tfbackend.yml"
 _STACK_NAME="${TF_VAR_app_name}-${BRANCH_NAME}"
+set +e
 _STACK_EXISTS=$(trap 'aws cloudformation describe-stacks --stack-name '"$_STACK_NAME"'' EXIT)
+set -e
 _STACK_EXISTS=$(echo "$_STACK_EXISTS" | grep "CreationTime")
 if [[ -z "$_STACK_EXISTS" ]]; then
     echo "[LOG] Terraform backend CloudFormation doesn't exist, creating it ..."
