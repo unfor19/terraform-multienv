@@ -25,7 +25,7 @@ steps:
       AWS_SECRET_ACCESS_KEY:
         from_secret: aws_secret_access_key_${DRONE_BRANCH}
     commands:
-      - bash scripts/prepare-backend.sh
+      - /bin/bash scripts/prepare-backend.sh
   - name: prepare-files-folders
     depends_on:
       - prepare-backend
@@ -37,7 +37,7 @@ steps:
         - feature/*
     image: xueshanf/awscli:alpine-3.11
     commands:
-      - bash scripts/prepare-files-folders.sh
+      - /bin/bash scripts/prepare-files-folders.sh
 
   - name: terraform-apply
     when:
