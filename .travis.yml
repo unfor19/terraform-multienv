@@ -18,10 +18,10 @@ env:
   - BACKEND_TPL: backend.tf.tpl
 
 before_install:
-  - wget https://releases.hashicorp.com/terraform/"$TERRAFORM_VERISON"/terraform_"$TERRAFORM_VERISON"_linux_amd64.zip
-  - unzip terraform_"$TERRAFORM_VERISON"_linux_amd64.zip
-  - sudo mv terraform /usr/local/bin/
-  - rm terraform_"$TERRAFORM_VERISON"_linux_amd64.zip
+  - curl -sL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o terraform.zip
+  - unzip -qq terraform.zip
+  - sudo mv terraform /usr/local/bin/ && sudo chmod +x /usr/local/bin/terraform
+  - rm terraform.zip
   - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
   - unzip awscliv2.zip
   - sudo ./aws/install
