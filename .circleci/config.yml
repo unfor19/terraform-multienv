@@ -6,8 +6,8 @@ workflows:
           filters:
             branches:
               only:
-                # /(circleci)/
-                /(dev)|(stg)|(prd)/
+                /(circleci)/
+                # /(dev)|(stg)|(prd)/
 jobs:
   terraform-apply:
     machine: true
