@@ -17,18 +17,18 @@ steps:
         - dev
         - stg
         - prd
-        - feature/*
     image: xueshanf/awscli:alpine-3.11
     commands:
       - /bin/bash scripts/prepare-files-folders.sh
 
-  - name: prepare-backend-dev
+  - name: prepare-backend
     depends_on:
       - prepare-files-folders
     when:
       branch:
         - dev
-        - feature/*
+        - stg
+        - prd
     image: xueshanf/awscli:alpine-3.11
     environment:
       AWS_ACCESS_KEY_ID:
@@ -38,59 +38,21 @@ steps:
     commands:
       - /bin/bash scripts/prepare-backend.sh
 
-  - name: prepare-backend-stg-prd
+  - name: terraform-apply
     depends_on:
       - prepare-files-folders
-    when:
-      branch:
-        - stg
-        - prd
-    image: xueshanf/awscli:alpine-3.11
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: aws_access_key_id_${DRONE_BRANCH//\//-}
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: aws_secret_access_key_${DRONE_BRANCH//\//-}
-    commands:
-      - /bin/bash scripts/prepare-backend.sh
-
-  - name: terraform-apply-dev
+      - prepare-backend
     when:
       branch:
         - dev
-        - feature/*
-    depends_on:
-      - prepare-files-folders
-      - prepare-backend-dev
+        - stg
+        - prd
     image: unfor19/drone-terraform:dev
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: aws_access_key_id_dev
       AWS_SECRET_ACCESS_KEY:
         from_secret: aws_secret_access_key_dev
-    settings:
-      actions:
-        - validate
-        - plan
-        - apply
-      root_dir: ${DRONE_BRANCH//\//-}/
-      vars:
-        environment: ${DRONE_BRANCH//\//-}
-
-  - name: terraform-apply-stg-prd
-    depends_on:
-      - prepare-files-folders
-      - prepare-backend-stg-prd
-    when:
-      branch:
-        - stg
-        - prd
-    image: unfor19/drone-terraform:dev
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: aws_access_key_id_${DRONE_BRANCH//\//-}
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: aws_secret_access_key_${DRONE_BRANCH//\//-}
     settings:
       actions:
         - validate
