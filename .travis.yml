@@ -8,7 +8,7 @@ branches:
 env:
   ### --------------------------------------------------
   ### Find and Replace
-  - TF_VAR_app_name: tfmultienv
+  - TF_VAR_app_name=tfmultienv
   - TF_VAR_region=eu-west-1
   - AWS_REGION=eu-west-1
   - AWS_DEFAULT_REGION=eu-west-1
@@ -17,16 +17,6 @@ env:
   - LIVE_DIR: live
   - BACKEND_TPL: backend.tf.tpl
 
-before_install:
-  - curl -sL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip
-  - unzip -qq terraform.zip
-  - sudo mv terraform /usr/local/bin/ && sudo chmod +x /usr/local/bin/terraform
-  - rm terraform.zip
-  - curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
-  - unzip awscliv2.zip
-  - sudo ./aws/install
-  - rm awscliv2.zip
-
 jobs:
   include:
     - stage: prepare-files-folders
@@ -34,8 +24,8 @@ jobs:
         - ./scripts/prepare-files-folders.sh
     - stage: prepare-backend
       script:
-        - declare -n AWS_ACCESS_KEY_ID_SECRET_NAME=aws_access_key_id_${TRAVIS_BRANCH}
-        - declare -n AWS_SECRET_ACCESS_KEY_SECRET_NAME=aws_secret_access_key_${TRAVIS_BRANCH}
+        - declare -n AWS_ACCESS_KEY_ID_SECRET_NAME=aws_access_key_id_${CIRCLE_BRANCH}
+        - declare -n AWS_SECRET_ACCESS_KEY_SECRET_NAME=aws_secret_access_key_${CIRCLE_BRANCH}
         - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_SECRET_NAME}
         - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_SECRET_NAME}
-        - ./scripts/prepare-backend.sh
+        - docker run --rm -w="/code" -e TF_VAR_app_name -e TF_VAR_region -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e BRANCH_NAME=$TRAVIS_BRANCH -v "${HOME}"/project/:/code/ unfor19/terraform-alpine:$TERRAFORM_VERSION /code/scripts/prepare-backend.sh
