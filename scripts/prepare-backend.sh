@@ -2,10 +2,10 @@
 _LIVE_DIR=${LIVE_DIR:=live}
 _BACKEND_TPL=${BACKEND_TPL:=backend.tf.tpl}
 
-if [[ -n "$BRANCH_NAME" ]]; then
-    _BRANCH_NAME=${BRANCH_NAME}
-else
+if [[ -z "$BRANCH_NAME" ]]; then
     _BRANCH_NAME=$(git branch --show-current)
+else
+    _BRANCH_NAME=${BRANCH_NAME}
 fi
 
 _BRANCH_NAME=${_BRANCH_NAME//\//-}
