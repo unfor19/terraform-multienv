@@ -11,24 +11,14 @@ fi
 
 _BRANCH_NAME=${_BRANCH_NAME//\//-}
 
-if [[ ! -d "$_LIVE_DIR" ]]; then
-    if [[ ! -f "${_LIVE_DIR}/${_BACKEND_TPL}" ]]; then
-        echo "[ERROR] The file backend.tf.tpl doesn't exist - $_BACKEND_TPL"
-        exit
-    fi
-else
-    echo "[ERROR] The supplied live directory doesn't exist - $_LIVE_DIR"
-    exit
-fi
-
 if [[ -z "$TF_VAR_app_name" ]]; then
     echo "[ERROR] Must set TF_VAR_app_name environment variable"
-    exit
+    exit 1
 fi
 
 if [[ -z "$AWS_REGION" ]]; then
     echo "[ERROR] Must set AWS_REGION environment variable"
-    exit
+    exit 1
 fi
 
 

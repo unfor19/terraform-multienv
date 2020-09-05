@@ -8,19 +8,29 @@ fi
 _BRANCH_NAME=${_BRANCH_NAME//\//-}
 _TEMPLATE_PATH=${TEMPLATE_PATH:="cloudformation/cfn-tfbackend.yml"}
 
+if [[ ! -d "$_LIVE_DIR" ]]; then
+    if [[ ! -f "${_LIVE_DIR}/${_BACKEND_TPL}" ]]; then
+        echo "[ERROR] The file backend.tf.tpl doesn't exist - $_BACKEND_TPL"
+        exit 1
+    fi
+else
+    echo "[ERROR] The supplied live directory doesn't exist - $_LIVE_DIR"
+    exit 1
+fi
+
 if [[ ! -d "$_BRANCH_NAME" ]]; then
     echo "[ERROR] Branch directory doesn't exist - '$_BRANCH_NAME'"
-    exit
+    exit 1
 fi
 
 if [[ -z "$TF_VAR_app_name" ]]; then
     echo "[ERROR] Must set TF_VAR_app_name environment variable"
-    exit
+    exit 1
 fi
 
 if [[ -z "$AWS_REGION" ]]; then
     echo "[ERROR] Must set AWS_REGION environment variable"
-    exit
+    exit 1
 fi
 
 _STACK_NAME="${TF_VAR_app_name}-${_BRANCH_NAME}"
