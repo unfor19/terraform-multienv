@@ -3,8 +3,6 @@ set -e
 _LIVE_DIR=${LIVE_DIR:=live}
 _BACKEND_TPL=${BACKEND_TPL:=backend.tf.tpl}
 
-echo "env bracnh name = $BRANCH_NAME"
-echo "git branch = $(git branch --show-current)"
 if [[ -z "$BRANCH_NAME" ]]; then
     _BRANCH_NAME=$(git branch --show-current)
 else
@@ -26,8 +24,6 @@ fi
 
 [[ -d "$_BRANCH_NAME" ]] && rm -rf "$_BRANCH_NAME"
 mkdir -p "${_BRANCH_NAME}"/
-echo "branch name = $_BRANCH_NAME"
-ls -lah
 cp "${_LIVE_DIR}"/* "${_BRANCH_NAME}"/
 sed -i.bak 's~AWS_REGION~'"$AWS_REGION"'~' "${_BRANCH_NAME}/${_BACKEND_TPL}"
 sed -i.bak 's~APP_NAME~'"$TF_VAR_app_name"'~' "${_BRANCH_NAME}/${_BACKEND_TPL}"
