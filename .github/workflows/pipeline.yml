@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ### -----------------------
-      ### Find and Replace
+      ### --------------------------------------------------
+      ### Find and Replace - YAML anchors are not supported
       TF_VAR_app_name: tfmultienv
-      TF_VAR_region: &AWS_REGION eu-west-1
-      ### -----------------------
-      AWS_REGION: *AWS_REGION
-      AWS_DEFAULT_REGION: *AWS_REGION
+      TF_VAR_region: eu-west-1
+      AWS_REGION: eu-west-1
+      AWS_DEFAULT_REGION: eu-west-1
+      ### --------------------------------------------------
 
     steps:
       - uses: actions/checkout@v2
