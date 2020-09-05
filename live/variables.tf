@@ -32,4 +32,9 @@ locals {
     "${lookup(var.cidr_ab, var.environment)}.20.0/24",
   ]
   availability_zones = ["${var.region}a", "${var.region}b"]
+
+  tags = {
+    "Environment" : var.environment,
+    "Terraform" : "true"
+  }
 }
