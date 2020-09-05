@@ -51,7 +51,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 1. We're going to create
    - AWS VPC, Subnets and Routing Tables per environment (all free)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
-1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-multienv/generate)
+1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
 1. Edit `./.drone.yml` - Find and Replace `tfmultienv` and `eu-west-1`
 1. CI/CD setup
 
