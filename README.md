@@ -22,7 +22,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
       <td align="center">GitHub Actions<br><br>
          <a href="https://github.com/unfor19/terraform-multienv/actions"><img width="100px" height="100px" src="https://bargs.link/assets/githubactions-logo.png" alt="drone.io" /></a>
       </td>
-      <td align="center">CircleCI<br><br>
+      <td align="center">CircleCi<br><br>
          <a href="https://app.circleci.com/pipelines/github/unfor19/terraform-multienv"><img width="100px" height="100px" src="https://bargs.link/assets/circleci-logo.png" alt="drone.io" /></a>
       </td>
    </tr>
