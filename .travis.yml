@@ -14,8 +14,8 @@ env:
   - AWS_DEFAULT_REGION=eu-west-1
   ### --------------------------------------------------
   - TERRAFORM_VERSION=0.13.1
-  - LIVE_DIR: live
-  - BACKEND_TPL: backend.tf.tpl
+  - LIVE_DIR=live
+  - BACKEND_TPL=backend.tf.tpl
 
 jobs:
   include:
