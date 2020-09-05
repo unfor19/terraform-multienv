@@ -37,7 +37,6 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 - Multiple Environments
 
-  - You have multiple environments, for example `dev`, `stg` and `prd`
   - All environments are maintained in the same git repository
   - Hosting environments in different AWS account is supported (and recommended)
 

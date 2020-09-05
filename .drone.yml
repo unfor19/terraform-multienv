@@ -14,7 +14,14 @@ environment:
   BACKEND_TPL: backend.tf.tpl
 
 steps:
+  - name: drone-diff
+    image: xueshanf/awscli:alpine-3.11
+    commands:
+      - /bin/bash scripts/drone-diff.sh
+
   - name: prepare-files-folders
+    depends_on:
+      - drone-diff
     image: xueshanf/awscli:alpine-3.11
     commands:
       - /bin/bash scripts/prepare-files-folders.sh

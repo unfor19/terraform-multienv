@@ -1,17 +1,13 @@
 version: 2.1
 workflows:
   pipeline:
-    when:
-      condition:
-        or:
-          - equal: [circleci, << pipeline.git.branch >>]
-          - equal: [true, false]
-          # - equal: [dev, << pipeline.git.branch >>]
-          # - equal: [stg, << pipeline.git.branch >>]
-          # - equal: [prd, << pipeline.git.branch >>]
     jobs:
-      - terraform-apply
-
+      - terraform-apply:
+          filters:
+            branches:
+              only:
+                /(circleci)/
+                # /(dev)|(stg)|(prd)/
 jobs:
   terraform-apply:
     machine: true
