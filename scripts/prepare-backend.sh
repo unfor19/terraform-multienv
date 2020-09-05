@@ -31,8 +31,8 @@ if [[ -z "$TF_VAR_app_name" ]]; then
     exit 1
 fi
 
-if [[ -z "$AWS_REGION" ]]; then
-    echo "[ERROR] Must set AWS_REGION environment variable"
+if [[ -z "$AWS_REGION" || -z "$AWS_DEFAULT_REGION" ]]; then
+    echo "[ERROR] Must set AWS_REGION and AWS_DEFAULT_REGION environment variables"
     exit 1
 fi
 
