@@ -2,8 +2,8 @@ name: pipeline
 
 on:
   push:
-    branches: [github-action]
-    # branches: [dev, stg, prd]
+    # branches: [github-action]
+    branches: [dev, stg, prd]
     paths-ignore:
       - "README.md"
 
@@ -12,40 +12,38 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ### -----------------------
-      ### Available in all steps, change app_name to your app_name
+      ### --------------------------------------------------
+      ### Find and Replace - YAML anchors are not supported
       TF_VAR_app_name: tfmultienv
-      ### -----------------------
+      TF_VAR_region: eu-west-1
+      AWS_REGION: eu-west-1
+      AWS_DEFAULT_REGION: eu-west-1
+      ### --------------------------------------------------
 
     steps:
       - uses: actions/checkout@v2
+      - uses: chrislennon/action-aws-cli@v1.1
+        name: Install AWS CLI
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
-      - name: prepare-files-folders
-        run: |
-          mkdir -p ${GITHUB_REF_SLUG}/
-          cp live/*.${GITHUB_REF_SLUG} ${GITHUB_REF_SLUG}/
-          cp live/*.tf ${GITHUB_REF_SLUG}/
-          cp live/*.tpl ${GITHUB_REF_SLUG}/ 2>/dev/null || true
-          mv ${GITHUB_REF_SLUG}/backend.tf.${GITHUB_REF_SLUG} ${GITHUB_REF_SLUG}/backend.tf
-      - name: install-terraform
-        uses: little-core-labs/install-terraform@v1
-        with:
-          version: 0.12.28
-      - name: set-aws-credentials
+      - name: Set AWS credentials as env vars
         run: |
           echo "::set-env name=AWS_ACCESS_KEY_ID_SECRET_NAME::AWS_ACCESS_KEY_ID_${GITHUB_REF_SLUG}"
           echo "::set-env name=AWS_SECRET_ACCESS_KEY_SECRET_NAME::AWS_SECRET_ACCESS_KEY_${GITHUB_REF_SLUG}"
+      - name: prepare-files-folders
+        run: |
+          ./scripts/prepare-files-folders.sh
+      - name: prepare-backend
+        run: |
+          export AWS_ACCESS_KEY_ID=${{ secrets[env.AWS_ACCESS_KEY_ID_SECRET_NAME] }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets[env.AWS_SECRET_ACCESS_KEY_SECRET_NAME] }}        
+          ./scripts/prepare-backend.sh
+      - name: install-terraform
+        uses: little-core-labs/install-terraform@v1
+        with:
+          version: 0.13.1
       - name: terraform-apply
         run: |
           export AWS_ACCESS_KEY_ID=${{ secrets[env.AWS_ACCESS_KEY_ID_SECRET_NAME] }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets[env.AWS_SECRET_ACCESS_KEY_SECRET_NAME] }}
-          cd ${GITHUB_REF_SLUG}/
-          terraform version
-          rm -rf .terraform
-          terraform init -input=false
-          terraform get
-          terraform validate
-          terraform plan -out=plan.tfout -var environment=${GITHUB_REF_SLUG}
-          terraform apply -auto-approve plan.tfout 
-          rm -rf .terraform
+          export AWS_SECRET_ACCESS_KEY=${{ secrets[env.AWS_SECRET_ACCESS_KEY_SECRET_NAME] }}        
+          ./scripts/terraform-apply.sh
