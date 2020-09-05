@@ -24,6 +24,8 @@ jobs:
       AWS_REGION: *AWS_REGION
       AWS_DEFAULT_REGION: *AWS_REGION
       TERRAFORM_VERSION: 0.13.1
+      LIVE_DIR: live
+      BACKEND_TPL: backend.tf.tpl
 
     steps:
       - checkout
