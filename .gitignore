@@ -3,6 +3,7 @@
 !.github/
 !.circleci/
 !.drone.yml
+!.travis.yml
 **/*.terraform
 *.idea
 *tfstate*
