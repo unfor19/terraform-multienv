@@ -60,7 +60,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS Access Keys per environment
 
       - Sign in with your GitHub account to [drone.io](https://cloud.drone.io/login) and activate your newly created git repository
-      - Create secrets per environment, by using AWS Access Keys, for example
+      - Create secrets per environment for each AWS Access Keys pair, for example
         1. `aws_access_key_id_dev`
         1. `aws_secret_access_key_dev`
            ![drone-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
