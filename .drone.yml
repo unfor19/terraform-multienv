@@ -33,7 +33,7 @@ steps:
     depends_on:
       - prepare-files-folders
       - prepare-backend
-    image: unfor19/drone-terraform:dev
+    image: unfor19/drone-terraform:1.0.0-tf0.13.1
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: aws_access_key_id_${DRONE_BRANCH//\//-}
