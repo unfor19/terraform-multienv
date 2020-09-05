@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 if [[ -z "$TF_VAR_app_name" ]]; then
     echo "[ERROR] Must set TF_VAR_app_name environment variable"
     exit
@@ -11,6 +10,7 @@ if [[ -z "$AWS_REGION" ]]; then
 fi
 
 BRANCH_NAME=$(git branch --show-current)
+BRANCH_NAME=${BRANCH_NAME//\//-}
 [[ -d "$BRANCH_NAME" ]] && rm -r "$BRANCH_NAME"
 mkdir -p "${BRANCH_NAME}"/
 cp live/* "${BRANCH_NAME}"/
