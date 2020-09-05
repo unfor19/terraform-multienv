@@ -8,14 +8,8 @@ branches:
 env:
   ### --------------------------------------------------
   ### Find and Replace
-  - TF_VAR_app_name=tfmultienv
-  - TF_VAR_region=eu-west-1
-  - AWS_REGION=eu-west-1
-  - AWS_DEFAULT_REGION=eu-west-1
+  - TF_VAR_app_name=tfmultienv TF_VAR_region=eu-west-1 AWS_REGION=eu-west-1 AWS_DEFAULT_REGION=eu-west-1 TERRAFORM_VERSION=0.13.1 LIVE_DIR=live BACKEND_TPL=backend.tf.tpl
   ### --------------------------------------------------
-  - TERRAFORM_VERSION=0.13.1
-  - LIVE_DIR=live
-  - BACKEND_TPL=backend.tf.tpl
 
 jobs:
   include:
