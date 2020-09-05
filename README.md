@@ -98,7 +98,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 ### Terraform
 
-- **backend.tf.tpl** - The script [prepare-files-folders.sh](./scripts/prepare-files-folders.sh) automatically finds and replaces `APP_NAME` and `ENVIRONMENT` according to `TF_VARS_app_name` and `BRANCH_NAME`
+- **backend.tf.tpl** - The script [prepare-files-folders.sh](./scripts/prepare-files-folders.sh) replaces `APP_NAME` with `TF_VARS_app_name` and `ENVIRONMENT` with `BRANCH_NAME`
 - **Remote Backend** is deployed with a CloudFormation template to avoid the chicken and the egg situation
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
 - **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
