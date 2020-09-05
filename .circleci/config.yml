@@ -2,16 +2,14 @@ version: 2.1
 workflows:
   pipeline:
     jobs:
-      - terraform-apply
-
+      - terraform-apply:
+          filters:
+            branches:
+              only:
+                /(circleci)/
+                # /(dev)|(stg)|(prd)/
 jobs:
   terraform-apply:
-    branches:
-      only:
-        - circleci
-        # - dev
-        # - stg
-        # - prd
     machine: true
     environment:
       ### --------------------------------------------------
