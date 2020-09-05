@@ -27,6 +27,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: |
+            apt-get update && apt-get install -y git
+      - run:
           name: prepare-files-folders
           command: |
             ./scripts/prepare-files-folders.sh
