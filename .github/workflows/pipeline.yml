@@ -19,6 +19,8 @@ jobs:
       AWS_REGION: eu-west-1
       AWS_DEFAULT_REGION: eu-west-1
       ### --------------------------------------------------
+      LIVE_DIR: live
+      BACKEND_TPL: backend.tf.tpl
 
     steps:
       - uses: actions/checkout@v2

@@ -4,27 +4,28 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 <table>
    <tr>
-      <td>dev</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/dev" /></a></td>
+      <td>environment</td>
+      <td><a href="https://github.com/unfor19/terraform-multienv/blob/dev/.drone.yml">drone.io</a></td>
+      <td><a href="https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/pipeline.yml">GitHub Actions</a></td>
+      <td><a href="https://github.com/unfor19/terraform-multienv/blob/dev/.circleci/config.yml">Circle Ci</a></td>
    </tr>
    <tr>
-      <td>stg</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/stg" /></a></td>
+      <td>dev</td>
+      <td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/dev" /></a></td>
+      <td><a href="https://github.com/unfor19/terraform-multienv/actions?query=workflow%3Apipeline"><img src="https://github.com/unfor19/terraform-multienv/workflows/pipeline/badge.svg?branch=dev" /></a></td>
+      <td><a href="https://app.circleci.com/pipelines/github/unfor19/terraform-multienv?branch=dev"><img src="https://circleci.com/gh/unfor19/terraform-multienv/tree/dev.svg?style=svg" /></a></td>
    </tr>
    <tr>
-      <td>prd</td><td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/prd" /></a></td>
+      <td>stg</td>
+      <td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/stg" /></a></td>
+      <td><a href="https://github.com/unfor19/terraform-multienv/actions?query=workflow%3Apipeline"><img src="https://github.com/unfor19/terraform-multienv/workflows/pipeline/badge.svg?branch=stg" /></a></td>    
+      <td><a href="https://app.circleci.com/pipelines/github/unfor19/terraform-multienv?branch=stg"><img src="https://circleci.com/gh/unfor19/terraform-multienv/tree/stg.svg?style=svg" /></a></td>        
    </tr>
-</table>
-
-<table>
    <tr>
-      <td align="center">drone.io<br><br>
-         <a href="https://cloud.drone.io/unfor19/terraform-multienv"><img width="100px" height="100px" src="https://bargs.link/assets/droneio-logo.png" alt="drone.io" /></a>
-      </td>
-      <td align="center">GitHub Actions<br><br>
-         <a href="https://github.com/unfor19/terraform-multienv/actions"><img width="100px" height="100px" src="https://bargs.link/assets/githubactions-logo.png" alt="drone.io" /></a>
-      </td>
-      <td align="center">CircleCi<br><br>
-         <a href="https://app.circleci.com/pipelines/github/unfor19/terraform-multienv"><img width="100px" height="100px" src="https://bargs.link/assets/circleci-logo.png" alt="drone.io" /></a>
-      </td>
+      <td>prd</td>
+      <td><a href="https://cloud.drone.io/unfor19/terraform-multienv"><img src="https://cloud.drone.io/api/badges/unfor19/terraform-multienv/status.svg?ref=refs/heads/prd" /></a></td>
+      <td><a href="https://github.com/unfor19/terraform-multienv/actions?query=workflow%3Apipeline"><img src="https://github.com/unfor19/terraform-multienv/workflows/pipeline/badge.svg?branch=prd" /></a></td>
+      <td><a href="https://app.circleci.com/pipelines/github/unfor19/terraform-multienv?branch=prd"><img src="https://circleci.com/gh/unfor19/terraform-multienv/tree/prd.svg?style=svg" /></a></td>      
    </tr>
 </table>
 
@@ -50,7 +51,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 1. We're going to create
    - AWS VPC, Subnets and Routing Tables per environment (all free)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
-1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-multienv/generate)
+1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
 1. Edit `./.drone.yml` - Find and Replace `tfmultienv` and `eu-west-1`
 1. CI/CD setup
 

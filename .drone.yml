@@ -10,6 +10,8 @@ environment:
   ### -----------------------
   AWS_REGION: *AWS_REGION
   AWS_DEFAULT_REGION: *AWS_REGION
+  LIVE_DIR: live
+  BACKEND_TPL: backend.tf.tpl
 
 steps:
   - name: prepare-files-folders
