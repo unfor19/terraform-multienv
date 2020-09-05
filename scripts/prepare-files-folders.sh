@@ -3,7 +3,7 @@ set -e
 _LIVE_DIR=${LIVE_DIR:=live}
 _BACKEND_TPL=${BACKEND_TPL:=backend.tf.tpl}
 
-if [[ -z "$BRANCH_NAME" ]]; then
+if [[ -n "$BRANCH_NAME" ]]; then
     _BRANCH_NAME=${BRANCH_NAME}
 else
     _BRANCH_NAME=$(git branch --show-current)

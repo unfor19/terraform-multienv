@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ -z "$BRANCH_NAME" ]]; then
+if [[ -n "$BRANCH_NAME" ]]; then
     _BRANCH_NAME=${BRANCH_NAME}
 else
     _BRANCH_NAME=$(git branch --show-current)
@@ -10,6 +10,7 @@ _TEMPLATE_PATH=${TEMPLATE_PATH:="cloudformation/cfn-tfbackend.yml"}
 
 if [[ ! -d "$_BRANCH_NAME" ]]; then
     echo "[ERROR] Branch directory doesn't exist - '$_BRANCH_NAME'"
+    exit
 fi
 
 if [[ -z "$TF_VAR_app_name" ]]; then
