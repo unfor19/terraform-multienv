@@ -22,7 +22,7 @@ if [[ -z "$AWS_REGION" ]]; then
 fi
 
 
-[[ -d "$_BRANCH_NAME" ]] && rm -r "$_BRANCH_NAME"
+[[ -d "$_BRANCH_NAME" ]] && rm -rf "$_BRANCH_NAME"
 mkdir -p "${_BRANCH_NAME}"/
 cp "${_LIVE_DIR}"/* "${_BRANCH_NAME}"/
 sed -i.bak 's~AWS_REGION~'"$AWS_REGION"'~' "${_BRANCH_NAME}/${_BACKEND_TPL}"

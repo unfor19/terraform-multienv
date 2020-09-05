@@ -11,7 +11,7 @@ fi
 _BRANCH_NAME=${_BRANCH_NAME//\//-}
 _TEMPLATE_PATH=${TEMPLATE_PATH:="cloudformation/cfn-tfbackend.yml"}
 
-if [[ ! -d "$_LIVE_DIR" ]]; then
+if [[ -d "${_LIVE_DIR}" ]]; then
     if [[ ! -f "${_LIVE_DIR}/${_BACKEND_TPL}" ]]; then
         echo "[ERROR] The file backend.tf.tpl doesn't exist - $_BACKEND_TPL"
         exit 1
