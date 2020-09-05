@@ -20,3 +20,4 @@ sed -i.bak 's~ENVIRONMENT~'"$BRANCH_NAME"'~' "${BRANCH_NAME}"/backend.tf.tpl
 mv "${BRANCH_NAME}"/backend.tf.tpl "${BRANCH_NAME}"/backend.tf
 echo "[LOG] Prepared files and folders for the environment - $BRANCH_NAME"
 ls -lah "$BRANCH_NAME"
+cat "${BRANCH_NAME}"/backend.tf
