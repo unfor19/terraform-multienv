@@ -1,11 +1,9 @@
 variable "app_name" {
-  type    = string
-  default = "tfmultienv"
+  type = string
 }
 
 variable "region" {
-  type    = string
-  default = "eu-west-1"
+  type = string
 }
 
 variable "environment" {
