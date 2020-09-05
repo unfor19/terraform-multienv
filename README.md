@@ -43,79 +43,36 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
   - \${app_name} = `tfmultienv`
   - \${environment} = `dev` or `stg` or `prd`
-  - \${ci-cd-tool} = `drone`
 
 ## Getting Started
 
-1. We're going to create a VPC, Subnets and Routing Tables per environment (all free)
+1. We're going to create
+   - AWS VPC, Subnets and Routing Tables per environment (all free)
+   - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
 1. Clone this repository or [Use as a template](https://github.com/unfor19/terraform-multienv/generate)
-1. Deploy Terraform Remote Backend - Create an S3 bucket to store `tfstate` and a DynamoDB Table for [state locking](https://www.terraform.io/docs/state/locking.html), per environment
-
-   [![Launch in Ireland](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Ireland (eu-west-1)](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
-
-   [![Launch in Virginia](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) Virginia (us-east-1)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml)
-
-   <details><summary>
-   Other regions
-   </summary>
-
-   To deploy in other regions, replace AWS_REGION with the region's code.
-
-   `https://AWS_REGION.console.aws.amazon.com/cloudformation/home?region=AWS_REGION#/stacks/quickcreate?templateURL=https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/cloudformation/cfn-tfbackend.yml`
-
-   </details>
-
-   <details><summary>
-   Deployed resources
-   </summary>
-
-   1. S3 Bucket
-      - Name: `${app_name}-state-${environment}`
-      - Versioning: `Enabled`
-      - Access: `Block All`
-   1. DynamoDB Table
-      - Name: `${app_name}-state-lock-${environment}`
-      - Primary Key (partition key): `LockID`
-      - Billing Mode: `PROVISIONED`
-      - Read/Write capacity: `1`
-
-   </details>
-
-1. Find and Replace `tfmultienv` and `eu-west-1`
-   1. `./live/backend.tf.${environment}`
-   1. `./live/variables.tf`
-   1. `./.${ci-cd-tool}.yml`
+1. Edit `./.drone.yml` - Find and Replace `tfmultienv` and `eu-west-1`
 1. CI/CD setup
 
-   1. Sign in with your GitHub account to [drone.io](https://cloud.drone.io/login) and activate your newly created git repository
-   1. AWS Console > Create an IAM User for CI/CD, per environment
-
+   1. AWS Console > [Create an IAM User](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for CI/CD per environment
       - Name: `cicd-${environment}`
-      - Permissions: `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
-      - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) with _Programmatic Access_ and save them in a safe place, we'll use them in the next step
+      - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
+      - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
+   1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS Access Keys per environment
 
-   1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS Access Keys per environment, for example
+      - Sign in with your GitHub account to [drone.io](https://cloud.drone.io/login) and activate your newly created git repository
+      - Create secrets per environment, by using AWS Access Keys, for example
+        1. `aws_access_key_id_dev`
+        1. `aws_secret_access_key_dev`
+           ![drone-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
+           <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example above
 
-      - aws_access_key_id\_**dev**
-      - aws_secret_access_key\_**dev**
-
-       <details><summary>
-       Drone Secrets Example - Expand/Collapse
-       </summary>
-
-      ![drone-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
-
-         </details>
-
-      <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example above
-
-1. Commit and push the changes to your repository
+1. Deploy infrastructure - Commit and push the changes to your repository
 
    ```bash
-   $ git checkout dev
-   $ git add .
-   $ git commit -m "deploy dev"
-   $ git push -U origin dev
+   git checkout dev
+   git add .
+   git commit -m "deploy dev"
+   git push -U origin dev
    ```
 
 1. Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://cloud.drone.io/unfor19/terraform-multienv/9/1/2)
@@ -123,27 +80,12 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 1. Promote `dev` environment to `stg`
 
    ```bash
-   $ git checkout stg
-   $ git merge dev
-   $ git push
+   git checkout stg
+   git merge dev
+   git push
    ```
 
 1. That's it, you've just deployed two identical environments, go ahead and do the same with `prd`
-
-## Repository Structure
-
-- `./`
-  - Contains `README.md`, `.gitignore`, `LICENSE` and `.${ci-cd-tool}.yml`
-  - `.${ci-cd-tool}.yml` - In this repository we're using [drone.io](https://drone.io)
-- `./live/`
-  - Contains `*.tf`, `*.tpl` and `backend.tf.${environment}`
-  - `*.tf` - The infrastructure, **don't** put `modules` in this folder
-  - `*.tpl` - In case you're using [templates files](https://www.terraform.io/docs/configuration/functions/templatefile.html)
-  - `*.backend.tf.${environment}` - Hardcoded values of the terraform backend per environment
-- `./cloudformation/`
-  - Contains CloudFormation templates (`*.yml`), for example [cfn-tfbackend.yml](https://github.com/unfor19/terraform-multienv/blob/dev/cloudformation/cfn-tfbackend.yml)
-- `./scripts/`
-  - Contains scripts which eases the dev process (`*.sh`)
 
 ## Recommendations
 
@@ -156,6 +98,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 ### Terraform
 
+- **backend.tf.tpl** - The script [prepare-files-folders.sh](./scripts/prepare-files-folders.sh) automatically finds and replaces `APP_NAME` and `ENVIRONMENT` according to `TF_VARS_app_name` and `BRANCH_NAME`
 - **Remote Backend** is deployed with a CloudFormation template to avoid the chicken and the egg situation
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
 - **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
