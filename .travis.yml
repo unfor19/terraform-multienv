@@ -1,0 +1,24 @@
+dist: bionic
+language: bash
+branches:
+  only:
+    - dev
+    - stg
+    - prd
+env:
+  ### --------------------------------------------------
+  ### Find and Replace
+  - BRANCH_NAME=$TRAVIS_BRANCH TF_VAR_app_name=tfmultienv TF_VAR_region=eu-west-1 AWS_REGION=eu-west-1 AWS_DEFAULT_REGION=eu-west-1 TERRAFORM_VERSION=0.13.1 LIVE_DIR=live BACKEND_TPL=backend.tf.tpl
+  ### --------------------------------------------------
+
+jobs:
+  include:
+    - stage: terraform-apply
+      script: >
+        ./scripts/prepare-files-folders.sh &&
+        declare -n AWS_ACCESS_KEY_ID_SECRET_NAME=aws_access_key_id_${TRAVIS_BRANCH} &&
+        declare -n AWS_SECRET_ACCESS_KEY_SECRET_NAME=aws_secret_access_key_${TRAVIS_BRANCH} &&
+        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_SECRET_NAME} &&
+        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_SECRET_NAME} &&
+        docker run --rm -w="/code" -e BACKEND_TPL -e LIVE_DIR -e TF_VAR_app_name -e TF_VAR_region -e AWS_DEFAULT_REGION -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e BRANCH_NAME=$TRAVIS_BRANCH -v "${TRAVIS_BUILD_DIR}":/code/ unfor19/terraform-alpine:$TERRAFORM_VERSION /code/scripts/prepare-backend.sh &&
+        docker run --rm -w="/code" -e BACKEND_TPL -e LIVE_DIR -e TF_VAR_app_name -e TF_VAR_region -e AWS_DEFAULT_REGION -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e BRANCH_NAME=$TRAVIS_BRANCH -v "${TRAVIS_BUILD_DIR}":/code/ unfor19/terraform-alpine:$TERRAFORM_VERSION /code/scripts/terraform-apply.sh

@@ -2,10 +2,10 @@
 _LIVE_DIR=${LIVE_DIR:=live}
 _BACKEND_TPL=${BACKEND_TPL:=backend.tf.tpl}
 
-if [[ -n "$BRANCH_NAME" ]]; then
-    _BRANCH_NAME=${BRANCH_NAME}
-else
+if [[ -z "$BRANCH_NAME" ]]; then
     _BRANCH_NAME=$(git branch --show-current)
+else
+    _BRANCH_NAME=${BRANCH_NAME}
 fi
 
 _BRANCH_NAME=${_BRANCH_NAME//\//-}
@@ -31,8 +31,8 @@ if [[ -z "$TF_VAR_app_name" ]]; then
     exit 1
 fi
 
-if [[ -z "$AWS_REGION" ]]; then
-    echo "[ERROR] Must set AWS_REGION environment variable"
+if [[ -z "$AWS_REGION" || -z "$AWS_DEFAULT_REGION" ]]; then
+    echo "[ERROR] Must set AWS_REGION and AWS_DEFAULT_REGION environment variables"
     exit 1
 fi
 
@@ -41,7 +41,8 @@ _STACK_EXISTS=$(trap 'aws cloudformation describe-stacks --stack-name '"$_STACK_
 _STACK_EXISTS=$(echo "$_STACK_EXISTS" | grep "CreationTime")
 if [[ -z "$_STACK_EXISTS" ]]; then
     echo "[LOG] Terraform backend CloudFormation doesn't exist, creating it ..."
-    aws cloudformation deploy --stack-name "$_STACK_NAME" \
+    aws cloudformation deploy \
+        --stack-name "$_STACK_NAME" \
         --template-file "$_TEMPLATE_PATH" \
         --parameter-overrides AppName="$TF_VAR_app_name" Environment="$_BRANCH_NAME"
 else
