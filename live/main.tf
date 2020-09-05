@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.region
-}
-
 module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
   version            = "~>2.0"
@@ -14,8 +10,5 @@ module "vpc" {
 
   azs = local.availability_zones
 
-  tags = {
-    "Environment" : var.environment,
-    "Terraform" : "true"
-  }
+  tags = local.tags
 }
