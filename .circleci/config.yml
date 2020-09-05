@@ -4,10 +4,10 @@ workflows:
     when:
       condition:
         or:
-          # - equal: [circleci, << pipeline.git.branch >>]
-          - equal: [dev, << pipeline.git.branch >>]
-          - equal: [stg, << pipeline.git.branch >>]
-          - equal: [prd, << pipeline.git.branch >>]
+          - equal: [circleci, << pipeline.git.branch >>]
+          # - equal: [dev, << pipeline.git.branch >>]
+          # - equal: [stg, << pipeline.git.branch >>]
+          # - equal: [prd, << pipeline.git.branch >>]
     jobs:
       - terraform-apply
 
