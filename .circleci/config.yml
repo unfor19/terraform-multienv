@@ -6,11 +6,12 @@ workflows:
 
 jobs:
   terraform-apply:
-    only:
-      - circleci
-      # - dev
-      # - stg
-      # - prd
+    branches:
+      only:
+        - circleci
+        # - dev
+        # - stg
+        # - prd
     machine: true
     environment:
       ### --------------------------------------------------
