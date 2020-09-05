@@ -15,7 +15,7 @@ jobs:
   include:
     - stage: prepare-files-folders
       script:
-        - /bin/bash ./scripts/prepare-files-folders.sh
+        - ./scripts/prepare-files-folders.sh
     - stage: prepare-backend
       script:
         - declare -n AWS_ACCESS_KEY_ID_SECRET_NAME=aws_access_key_id_${CIRCLE_BRANCH}
