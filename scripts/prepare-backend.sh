@@ -1,4 +1,7 @@
 #!/bin/bash
+_LIVE_DIR=${LIVE_DIR:=live}
+_BACKEND_TPL=${BACKEND_TPL:=backend.tf.tpl}
+
 if [[ -n "$BRANCH_NAME" ]]; then
     _BRANCH_NAME=${BRANCH_NAME}
 else
