@@ -77,7 +77,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    git checkout dev
    git add .
    git commit -m "deploy dev"
-   git push -U origin dev
+   git push --set-upstream origin dev
    ```
 
 1. Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://cloud.drone.io/unfor19/terraform-multienv/9/1/2)
