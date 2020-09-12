@@ -51,8 +51,8 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 ## Getting Started
 
-1. We're going to create
-   - AWS VPC, Subnets and Routing Tables per environment (all free)
+1. We're going to create the following resources per environment
+   - AWS VPC, Subnets, Routes and Routing Tables, Internet Gateway, S3 bucket (website) and S3 object (index.html)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
 1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
 1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for CI/CD the service per environment
@@ -71,7 +71,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
      <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example below
      ![github-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/github-secrets-example.png)
 
-1. Deploy the infrastructure - Commit and push the changes to your repository
+1. Deploying the infrastructure - Commit and push changes to your repository
 
    ```bash
    git checkout dev
@@ -106,7 +106,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
 - **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
   - Table Name: `${app_name}-state-lock-${environment}`
-  - Item Name: `${app_name}-state-${environment}/terraform.tfstate-md5`
+  - Item Name: `${app_name}-state-${environment}/terraform.tfstate*`
 
 ### Security
 
