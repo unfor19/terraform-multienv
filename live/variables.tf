@@ -25,7 +25,7 @@ locals {
   vpc_cidr = "${lookup(var.cidr_ab, var.environment)}.0.0/16"
   public_subnets = [
     "${lookup(var.cidr_ab, var.environment)}.1.0/24",
-    "${lookup(var.cidr_ab, var.environment)}.2.0/24",
+    "${lookup(var.cidr_ab, var.environment)}.3.0/24",
   ]
   private_subnets = [
     "${lookup(var.cidr_ab, var.environment)}.10.0/24",
