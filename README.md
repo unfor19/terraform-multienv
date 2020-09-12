@@ -60,7 +60,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - Name: `${app_name}-${environment}-cicd`
    - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
    - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
-1. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets) for basic application details
+1. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) for basic application details
 
    - `APP_NAME` - Application name, such as `tfmultienv`
    - `AWS_REGION` - Region to deploy the application, such as `eu-west-1` (Ireland)
