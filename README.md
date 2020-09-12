@@ -55,7 +55,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - AWS VPC, Subnets, Routes and Routing Tables, Internet Gateway
    - S3 bucket (website) and an S3 object (index.html)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
-1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
+1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate) and **don't tick** _Include all branches_
 1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for the CI/CD service per environment
    - Name: `${app_name}-${environment}-cicd`
    - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
@@ -90,13 +90,27 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
      1. Replace `***` with the `AWS_REGION`, for example `eu-west-1`
         <br>[terraform-20200912175003424600000001.s3-website-**eu-west-1**.amazonaws.com](http://terraform-20200912173059419600000001.s3-website-eu-west-1.amazonaws.com)
 
+1. Create `stg` branch
+
+   ```
+   git checkout dev
+   git checkout -b stg
+   git push --set-upstream origin stg
+   ```
+
 1. GitHub > Promote `dev` environment to `stg`
 
    - Create a PR from `dev` to `stg`
    - The plan to `stg` is added as a comment by the [terraform-plan](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-plan.yml) pipeline
-   - Merge the changes to `stg`, and check the [terraform-apply](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-apply.yml) in the Actions tab
+   - Merge the changes to `stg`, and check the [terraform-apply](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-apply.yml) pipeline in the Actions tab
 
 1. That's it, you've just deployed two identical environments! Go ahead and do the same with `prd`
+
+1. How to proceed from here
+   1. Make changes in `dev` branch, commit and push
+   1. Promote `dev` to `stg` by creating a Pull Request
+   1. Promote `stg` to `prd` by creating a Pull Request
+   1. Revert changes in `stg` and `prd` by [reverting Pull Requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reverting-a-pull-request)
 
 ## Recommendations
 
@@ -104,7 +118,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 - **Naming Convention** should be consistent across your application and infrastructure. Avoid using `master` for `production`. A recommended set of names: `dev`, `tst` (qa), `stg` and `prd`. Using shorter names is preferred, since some AWS resources' names have a character limit
 - **Resources Names** should **contain the environment name**, for example `tfmultienv-natgateway-prd`
-- [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 1\$ per month)
+- [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 5\$ per month)
 - **Using Multiple AWS Accounts** for hosting different environments is recommended.<br>The way I implement it - `dev` and `stg` in the same account and `prd` in a different account
 
 ### Terraform
@@ -126,7 +140,6 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 - **Default Branch** is **dev** since this is the branch that is mostly used
 - **Branches Names** per environment makes the whole CI/CD process **simpler**
 - **Feature Branch** per environment **complicates** the whole process, since creating an environment per feature-branch means creating a Terraform Backend per feature-branch. Though it is possible, it's not recommended
-- **Updating Environment Infrastructure** is done with **git push** and **git merge**, this way we can audit the changes
 
 ### Repository Structure
 
