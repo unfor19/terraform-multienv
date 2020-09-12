@@ -2,8 +2,8 @@ name: terraform-apply
 
 on:
   push:
-    branches: [github-actions]
-    # branches: [dev, stg, prd]
+    # branches: [github-actions]
+    branches: [dev, stg, prd]
     paths-ignore:
       - "README.md"
 
