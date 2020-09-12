@@ -52,7 +52,8 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 ## Getting Started
 
 1. We're going to create the following resources per environment
-   - AWS VPC, Subnets, Routes and Routing Tables, Internet Gateway, S3 bucket (website) and S3 object (index.html)
+   - AWS VPC, Subnets, Routes and Routing Tables, Internet Gateway
+   - S3 bucket (website) and an S3 object (index.html)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
 1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
 1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for CI/CD the service per environment
@@ -80,7 +81,14 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    git push --set-upstream origin dev
    ```
 
-1. Check out your CI/CD logs in the Actions tab and the newly created resources in AWS Console.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://github.com/unfor19/terraform-multienv/actions)
+1. Results
+
+   - Newly created resources in AWS Console - VPC, S3 and DynamoDB Table
+   - CI/CD logs in the Actions tab([this repo's logs](https://github.com/unfor19/terraform-multienv/actions))
+   - Static website URL is available in the `terraform-apply` logs, for example:
+     1. `s3_bucket_url = terraform-20200912173059419600000001.s3-website-***.amazonaws.com`
+     1. Replace `***` with the `AWS_REGION`, for example `eu-west-1`
+        <br>[terraform-20200912175003424600000001.s3-website-**eu-west-1**.amazonaws.com](http://terraform-20200912173059419600000001.s3-website-eu-west-1.amazonaws.com)
 
 1. GitHub > Promote `dev` environment to `stg`
 
@@ -88,7 +96,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - The plan to `stg` is added as a comment by the [terraform-plan](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-plan.yml) pipeline
    - Merge the changes to `stg`, and check the [terraform-apply](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-apply.yml) in the Actions tab
 
-1. That's it, you've just deployed two identical environments, go ahead and do the same with `prd`
+1. That's it, You've just deployed two identical environments! Go ahead and do the same with `prd`
 
 ## Recommendations
 
