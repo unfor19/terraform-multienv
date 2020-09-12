@@ -56,7 +56,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - S3 bucket (website) and an S3 object (index.html)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
 1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
-1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for CI/CD the service per environment
+1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for the service CI/CD per environment
    - Name: `appname-${environment}-cicd`
    - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
    - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
