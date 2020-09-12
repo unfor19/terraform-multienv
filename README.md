@@ -55,23 +55,23 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - AWS VPC, Subnets and Routing Tables per environment (all free)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
 1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
-1. Edit `./.drone.yml` - Find and Replace `tfmultienv` and `eu-west-1`
-1. CI/CD setup
+1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for CI/CD the service per environment
+   - Name: `appname-${environment}-cicd`
+   - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
+   - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
+1. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets) for basic application details
 
-   1. AWS Console > [Create an IAM User](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for CI/CD per environment
-      - Name: `cicd-${environment}`
-      - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
-      - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
-   1. drone.io > Create [repository secrets](https://docs.drone.io/secret/repository/) for AWS Access Keys per environment
+   - `APP_NAME` - Application name, such as `tfmultienv`
+   - `AWS_REGION` - Region to deploy the application, such as `eu-west-1` (Ireland)
 
-      - Sign in with your GitHub account to [drone.io](https://cloud.drone.io/login) and activate your newly created git repository
-      - Create secrets per environment for each AWS Access Keys pair, for example
-        1. `aws_access_key_id_dev`
-        1. `aws_secret_access_key_dev`
-           ![drone-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/drone-secrets-example.png)
-           <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example above
+1. GitHub > Create the following repository secrets for authenticating with AWS, according to the access keys that were created in previous steps
 
-1. Deploy infrastructure - Commit and push the changes to your repository
+   - `AWS_ACCESS_KEY_ID_DEV`
+   - `AWS_SECRET_ACCESS_KEY_DEV`
+     <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example below
+     ![github-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/github-secrets-example.png)
+
+1. Deploy the infrastructure - Commit and push the changes to your repository
 
    ```bash
    git checkout dev
@@ -80,15 +80,13 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    git push --set-upstream origin dev
    ```
 
-1. Check out your CI/CD logs in [Drone Cloud](https://cloud.drone.io) and the newly created resources in AWS Console > VPC.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://cloud.drone.io/unfor19/terraform-multienv/9/1/2)
+1. Check out your CI/CD logs in the Actions tab and the newly created resources in AWS Console.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://github.com/unfor19/terraform-multienv/actions)
 
-1. Promote `dev` environment to `stg`
+1. GitHub > Promote `dev` environment to `stg`
 
-   ```bash
-   git checkout stg
-   git merge dev
-   git push
-   ```
+   - Create a PR from `dev` to `stg`
+   - The plan to `stg` is added as a comment by the [terraform-plan](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-plan.yml) pipeline
+   - Merge the changes to `stg`, and check the [terraform-apply](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-apply.yml) in the Actions tab
 
 1. That's it, you've just deployed two identical environments, go ahead and do the same with `prd`
 
