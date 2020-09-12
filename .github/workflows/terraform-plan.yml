@@ -9,7 +9,7 @@ on:
       - "README.md"
 
 jobs:
-  terraform:
+  terraform-plan:
     runs-on: ubuntu-latest
 
     env:
