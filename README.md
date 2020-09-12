@@ -74,7 +74,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 1. Deploying the infrastructure - Commit and push changes to your repository
 
-   ```bash
+   ```
    git checkout dev
    git add .
    git commit -m "deploy dev"
@@ -107,10 +107,11 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 1. That's it, you've just deployed two identical environments! Go ahead and do the same with `prd`
 
 1. How to proceed from here
-   1. Make changes in `dev` branch, commit and push
-   1. Promote `dev` to `stg` by creating a Pull Request
-   1. Promote `stg` to `prd` by creating a Pull Request
-   1. Revert changes in `stg` and `prd` by [reverting Pull Requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reverting-a-pull-request)
+   1. Make changes in `dev` - commit and push
+   1. Promote `dev` to `stg` - create a PR
+   1. Promote `stg` to `prd` - create a PR
+   1. Revert changes in `dev` - [reverting a commit](https://git-scm.com/docs/git-revert.html)
+   1. Revert changes in `stg` and `prd` - [reverting a PR](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reverting-a-pull-request#reverting-a-pull-request)
 
 ## Recommendations
 
@@ -120,6 +121,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 - **Resources Names** should **contain the environment name**, for example `tfmultienv-natgateway-prd`
 - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) costs are negligible (less than 5\$ per month)
 - **Using Multiple AWS Accounts** for hosting different environments is recommended.<br>The way I implement it - `dev` and `stg` in the same account and `prd` in a different account
+- **Create a test environment** to test new resources or breaking changes, such as migrating from MySQL to Postgres. The main goal is to avoid breaking the `dev` environment, which means blocking the development team.
 
 ### Terraform
 
@@ -139,12 +141,12 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 - **Default Branch** is **dev** since this is the branch that is mostly used
 - **Branches Names** per environment makes the whole CI/CD process **simpler**
-- **Feature Branch** per environment **complicates** the whole process, since creating an environment per feature-branch means creating a Terraform Backend per feature-branch. Though it is possible, it's not recommended
+- **Feature Branch** per environment **complicates** the whole process, since creating an environment per feature-branch means creating a Terraform Backend per feature-branch.
 
 ### Repository Structure
 
 - **Modules** should be stored in a **different repository**
-- **Infrastructure Repository** should be **separated** from the **Frontend and Backend Respositories**
+- **Infrastructure Repository** should be **separated** from the **Frontend and Backend Respositories**. There's no need to re-deploy the infrastructure each time the application changes (loosely coupled)
 
 ## References
 
