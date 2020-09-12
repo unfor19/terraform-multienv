@@ -51,12 +51,13 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 ## Getting Started
 
-1. We're going to create
-   - AWS VPC, Subnets and Routing Tables per environment (all free)
+1. We're going to create the following resources per environment
+   - AWS VPC, Subnets, Routes and Routing Tables, Internet Gateway
+   - S3 bucket (website) and an S3 object (index.html)
    - [Terraform remote backend](https://www.terraform.io/docs/backends/types/s3.html) - S3 bucket and DynamoDB table
 1. Create a new GitHub repository by clicking - [Use this template](https://github.com/unfor19/terraform-multienv/generate)
-1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for CI/CD the service per environment
-   - Name: `appname-${environment}-cicd`
+1. AWS Console > [Create IAM Users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) for the CI/CD service per environment
+   - Name: `${app_name}-${environment}-cicd`
    - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
    - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
 1. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets) for basic application details
@@ -71,7 +72,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
      <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example below
      ![github-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/github-secrets-example.png)
 
-1. Deploy the infrastructure - Commit and push the changes to your repository
+1. Deploying the infrastructure - Commit and push changes to your repository
 
    ```bash
    git checkout dev
@@ -80,7 +81,14 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    git push --set-upstream origin dev
    ```
 
-1. Check out your CI/CD logs in the Actions tab and the newly created resources in AWS Console.<br>To watch the CI/CD logs of this repository - [unfor19/terraform-multienv](https://github.com/unfor19/terraform-multienv/actions)
+1. Results
+
+   - Newly created resources in AWS Console - VPC, S3 and DynamoDB Table
+   - CI/CD logs in the Actions tab ([this repo's logs](https://github.com/unfor19/terraform-multienv/actions))
+   - The URL of the deployed static S3 website is available in the `terraform-apply` logs, for example:
+     1. `s3_bucket_url = terraform-20200912173059419600000001.s3-website-***.amazonaws.com`
+     1. Replace `***` with the `AWS_REGION`, for example `eu-west-1`
+        <br>[terraform-20200912175003424600000001.s3-website-**eu-west-1**.amazonaws.com](http://terraform-20200912173059419600000001.s3-website-eu-west-1.amazonaws.com)
 
 1. GitHub > Promote `dev` environment to `stg`
 
@@ -88,7 +96,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - The plan to `stg` is added as a comment by the [terraform-plan](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-plan.yml) pipeline
    - Merge the changes to `stg`, and check the [terraform-apply](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-apply.yml) in the Actions tab
 
-1. That's it, you've just deployed two identical environments, go ahead and do the same with `prd`
+1. That's it, you've just deployed two identical environments! Go ahead and do the same with `prd`
 
 ## Recommendations
 
@@ -104,9 +112,9 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 - **backend.tf.tpl** - Terraform Remote Backend settings per environment. The script [prepare-files-folders.sh](./scripts/prepare-files-folders.sh) replaces `APP_NAME` with `TF_VARS_app_name` and `ENVIRONMENT` with `BRANCH_NAME`
 - **Remote Backend** is deployed with a CloudFormation template to avoid the chicken and the egg situation
 - **Locked Terraform tfstate** occurs when a CI/CD process is running per environment. Stopping and restarting, or running multiple deployments to the same environment will result in an error. This is the expected behavior, we don't want multiple entities (CI/CD or Users) to deploy to the same environment at the same time
-- **Unlock Terraform tfstate** by deleting the **md5 item** from the state's DynamoDB table, for example
+- **Unlock Terraform tfstate** by deleting the items from the state-lock DynamoDB table, for example
   - Table Name: `${app_name}-state-lock-${environment}`
-  - Item Name: `${app_name}-state-${environment}/terraform.tfstate-md5`
+  - Item Name: `${app_name}-state-${environment}/terraform.tfstate*`
 
 ### Security
 
@@ -123,12 +131,13 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 ### Repository Structure
 
 - **Modules** should be stored in a **different repository**
-- **Infrastructure Repository** should **separated** from the **Frontend and Backend Respositories**
+- **Infrastructure Repository** should be **separated** from the **Frontend and Backend Respositories**
 
 ## References
 
 - To get started with Terraform, watch this webinar - [Getting started with Terraform in AWS
   ](https://www.youtube.com/watch?v=cBDmoC7QonA)
+- [Terraform Dynamic Subnets](https://dev.to/prodopsio/terraform-aws-dynamic-subnets-2cgo)
 - Terraform Best Practices - [ozbillwang/terraform-best-practices](https://github.com/ozbillwang/terraform-best-practices)
 
 ## Authors

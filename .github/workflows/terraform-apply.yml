@@ -8,7 +8,7 @@ on:
       - "README.md"
 
 jobs:
-  terraform:
+  terraform-apply:
     runs-on: ubuntu-latest
 
     env:
