@@ -32,8 +32,8 @@ jobs:
       - name: Set AWS credentials as env vars
         run: |
           [[ -n $GITHUB_BASE_REF_SLUG ]] && GITHUB_REF_SLUG=$GITHUB_BASE_REF_SLUG
-          echo "::set-env name=AWS_ACCESS_KEY_ID_SECRET_NAME::AWS_ACCESS_KEY_ID_${GITHUB_REF_SLUG}"
-          echo "::set-env name=AWS_SECRET_ACCESS_KEY_SECRET_NAME::AWS_SECRET_ACCESS_KEY_${GITHUB_REF_SLUG}"
+          echo "AWS_ACCESS_KEY_ID_SECRET_NAME=AWS_ACCESS_KEY_ID_${GITHUB_REF_SLUG}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY_SECRET_NAME=AWS_SECRET_ACCESS_KEY_${GITHUB_REF_SLUG}" >> $GITHUB_ENV
       - name: prepare-files-folders
         run: |
           [[ -n $GITHUB_BASE_REF_SLUG ]] && export BRANCH_NAME=$GITHUB_BASE_REF_SLUG

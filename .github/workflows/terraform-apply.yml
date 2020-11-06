@@ -31,8 +31,8 @@ jobs:
         uses: rlespinasse/github-slug-action@v2.x
       - name: Set AWS credentials as env vars
         run: |
-          echo "::set-env name=AWS_ACCESS_KEY_ID_SECRET_NAME::AWS_ACCESS_KEY_ID_${GITHUB_REF_SLUG}"
-          echo "::set-env name=AWS_SECRET_ACCESS_KEY_SECRET_NAME::AWS_SECRET_ACCESS_KEY_${GITHUB_REF_SLUG}"
+          echo "AWS_ACCESS_KEY_ID_SECRET_NAME=AWS_ACCESS_KEY_ID_${GITHUB_REF_SLUG}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY_SECRET_NAME=AWS_SECRET_ACCESS_KEY_${GITHUB_REF_SLUG}" >> $GITHUB_ENV
       - name: prepare-files-folders
         run: |
           ./scripts/prepare-files-folders.sh
