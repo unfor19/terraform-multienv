@@ -25,8 +25,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: chrislennon/action-aws-cli@v1.1
+      - uses: unfor19/install-aws-cli-action@v1      
         name: Install AWS CLI
+        with:
+          version: 1
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
       - name: Set AWS credentials as env vars
