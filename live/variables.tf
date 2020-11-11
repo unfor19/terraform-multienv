@@ -1,16 +1,5 @@
-variable "app_name" {
-  type = string
-}
-
-variable "region" {
-  type = string
-}
-
-variable "environment" {
-  type        = string
-  description = "dev, stg, prd"
-}
-
+### Dynamic Values ------------------------------
+### ---------------------------------------------
 variable "cidr_ab" {
   type = map
   default = {
@@ -19,7 +8,11 @@ variable "cidr_ab" {
     prd = "10.3"
   }
 }
+### ---------------------------------------------
 
+
+### Locals Values -------------------------------
+### ---------------------------------------------
 locals {
   prefix   = "${var.app_name}-${var.environment}"
   vpc_cidr = "${lookup(var.cidr_ab, var.environment)}.0.0/16"
@@ -38,3 +31,21 @@ locals {
     "Terraform" : "true"
   }
 }
+### ---------------------------------------------
+
+
+### Static Values DON'T TOUCH -------------------
+### ---------------------------------------------
+variable "app_name" {
+  type = string
+}
+
+variable "region" {
+  type = string
+}
+
+variable "environment" {
+  type        = string
+  description = "dev, stg, prd"
+}
+### ---------------------------------------------
