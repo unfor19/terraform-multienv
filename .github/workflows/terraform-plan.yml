@@ -25,15 +25,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: chrislennon/action-aws-cli@v1.1
+      - uses: unfor19/install-aws-cli-action@v1      
         name: Install AWS CLI
+        with:
+          version: 1
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
       - name: Set AWS credentials as env vars
         run: |
           [[ -n $GITHUB_BASE_REF_SLUG ]] && GITHUB_REF_SLUG=$GITHUB_BASE_REF_SLUG
-          echo "::set-env name=AWS_ACCESS_KEY_ID_SECRET_NAME::AWS_ACCESS_KEY_ID_${GITHUB_REF_SLUG}"
-          echo "::set-env name=AWS_SECRET_ACCESS_KEY_SECRET_NAME::AWS_SECRET_ACCESS_KEY_${GITHUB_REF_SLUG}"
+          echo "AWS_ACCESS_KEY_ID_SECRET_NAME=AWS_ACCESS_KEY_ID_${GITHUB_REF_SLUG}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY_SECRET_NAME=AWS_SECRET_ACCESS_KEY_${GITHUB_REF_SLUG}" >> $GITHUB_ENV
       - name: prepare-files-folders
         run: |
           [[ -n $GITHUB_BASE_REF_SLUG ]] && export BRANCH_NAME=$GITHUB_BASE_REF_SLUG
