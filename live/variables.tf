@@ -1,7 +1,7 @@
 ### Dynamic Values ------------------------------
 ### ---------------------------------------------
 variable "cidr_ab" {
-  type = map
+  type = map(any)
   default = {
     dev = "10.1"
     stg = "10.2"
@@ -28,7 +28,8 @@ locals {
 
   tags = {
     "Environment" : var.environment,
-    "Terraform" : "true"
+    "Terraform" : "true",
+    "AppName": var.app_name
   }
 }
 ### ---------------------------------------------

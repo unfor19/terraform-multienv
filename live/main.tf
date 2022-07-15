@@ -1,6 +1,6 @@
 module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
-  version            = "~>2.0"
+  version            = "~>3.14"
   name               = local.prefix
   cidr               = local.vpc_cidr
   private_subnets    = local.private_subnets
@@ -14,21 +14,27 @@ module "vpc" {
 }
 
 resource "aws_s3_bucket" "app" {
-  acl = "public-read"
-
-  website {
-    index_document = "index.html"
-  }
-
   tags = local.tags
 }
 
-resource "aws_s3_bucket_object" "app" {
-  bucket       = aws_s3_bucket.app.id
-  key          = "index.html"
+resource "aws_s3_bucket_acl" "app" {
+  bucket = aws_s3_bucket.app.id
+  acl    = "public-read"
+}
+
+resource "aws_s3_bucket_website_configuration" "app" {
+  bucket = aws_s3_bucket.app.bucket
+
+  index_document {
+    suffix = "index.html"
+  }
+}
+
+resource "aws_s3_object" "app" {
+  bucket = aws_s3_bucket.app.id
   acl          = "public-read"
+  key          = "index.html"
   content      = "<h1>Welcome to the ${var.environment} environment</h1>"
   content_type = "text/html"
-
-  tags = local.tags
+  tags   = local.tags
 }
