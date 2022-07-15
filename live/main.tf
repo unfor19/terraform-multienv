@@ -34,7 +34,7 @@ resource "aws_s3_object" "app" {
   bucket = aws_s3_bucket.app.id
   acl          = "public-read"
   key          = "index.html"
-  content      = "<h1>Hi from ${var.app_name}, and welcome to the ${var.environment} environment</h1>"
+  content      = "<h1>Hi there 👋 from ${var.app_name}, and welcome to the ${var.environment} environment</h1>"
   content_type = "text/html"
   tags   = local.tags
 }

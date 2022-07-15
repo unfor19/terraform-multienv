@@ -107,8 +107,8 @@ TERRAFORM_PLAN_LOG_PATH:=${TERRAFORM_LIVE_DIR}/.${APP_NAME}-${STAGE}-plan.log
 TERRAFORM_APPLY_LOG_PATH:=${TERRAFORM_LIVE_DIR}/.${APP_NAME}-${STAGE}-apply.log
 TERRAFORM_BACKENDTPL_PATH:=${TERRAFORM_LIVE_DIR}/backend.${STAGE}.tpl
 TERRAFORM_BACKEND_CFN_PATH:=${ROOT_DIR}/cloudformation/cfn-tfbackend.yml
-TERRAFORM_BACKEND_STACK_NAME=${APP_NAME}-terraform-backend-${STAGE}
-TERRAFORM_BACKEND_STACK_LOG_PATH=${TERRAFORM_LIVE_DIR}/.${APP_NAME}-${STAGE}-backend.log
+TERRAFORM_BACKEND_STACK_NAME:=${APP_NAME}-terraform-backend-${STAGE}
+TERRAFORM_BACKEND_STACK_LOG_PATH=:${TERRAFORM_LIVE_DIR}/.${APP_NAME}-${STAGE}-backend.log
 
 # To validate env vars, add "validate-MY_ENV_VAR" 
 # as a prerequisite to the relevant target/step
@@ -172,9 +172,13 @@ infra-init: validate validate-TERRAFORM_LIVE_DIR validate-TERRAFORM_BACKENDTPL_P
 
 
 infra-plan: validate validate-TERRAFORM_PLAN_PATH validate-TERRAFORM_PLAN_LOG_PATH ## Generate a Plan with terraform
-	@[[ -f ${TERRAFORM_PLAN_PATH} ]] && rm ${TERRAFORM_PLAN_PATH}
-	@[[ -f ${TERRAFORM_PLAN_LOG_PATH} ]] && rm ${TERRAFORM_PLAN_LOG_PATH}
-	@cd $(TERRAFORM_LIVE_DIR) && ${TERRAFORM_BINARY} plan -out "${TERRAFORM_PLAN_PATH}" | tee ${TERRAFORM_PLAN_LOG_PATH}
+	@if [[ -f "${TERRAFORM_PLAN_PATH}" ]]; then \
+		rm ${TERRAFORM_PLAN_PATH} ; \
+	fi
+	@if [[ -f "${TERRAFORM_PLAN_LOG_PATH}" ]]; then \
+		rm ${TERRAFORM_PLAN_LOG_PATH} ; \
+	fi
+	cd $(TERRAFORM_LIVE_DIR) && ${TERRAFORM_BINARY} plan -out "${TERRAFORM_PLAN_PATH}" | tee ${TERRAFORM_PLAN_LOG_PATH}
 	@if grep 'found no differences, so no changes are needed' ${TERRAFORM_PLAN_LOG_PATH} ; then \
 		[[ -f ${TERRAFORM_PLAN_PATH} ]] && rm ${TERRAFORM_PLAN_PATH} ; \
 		[[ "${CI}" = "true" ]] && echo "::warning file=Makefile:: Skipped infra-plan" ; \
@@ -184,23 +188,30 @@ infra-plan: validate validate-TERRAFORM_PLAN_PATH validate-TERRAFORM_PLAN_LOG_PA
 	fi
 
 
-infra-apply: validate validate-TERRAFORM_LIVE_DIR validate-TERRAFORM_PLAN_PATH validate-TERRAFORM_BINARY ## Apply plan with terraform
-	@[[ -f ${TERRAFORM_APPLY_LOG_PATH} ]] && rm ${TERRAFORM_APPLY_LOG_PATH}
-	@cd $(TERRAFORM_LIVE_DIR) && \
-	if [[ ! -s ${TERRAFORM_PLAN_PATH} ]] ; then \
-		echo Skipped apply ; \
-		exit 0 ; \
+infra-apply: validate validate-TERRAFORM_LIVE_DIR validate-TERRAFORM_PLAN_PATH validate-TERRAFORM_BINARY validate-TERRAFORM_APPLY_LOG_PATH ## Apply plan with terraform
+	@if [[ -f "${TERRAFORM_APPLY_LOG_PATH}" ]]; then \
+		rm ${TERRAFORM_APPLY_LOG_PATH} ; \
+	fi ; \
+	if [[ -s "${TERRAFORM_PLAN_PATH}" ]] ; then \
+		echo "Found '${TERRAFORM_PLAN_PATH}', applying ..." ; \
+		cd ${TERRAFORM_LIVE_DIR} && ${TERRAFORM_BINARY} apply "${TERRAFORM_PLAN_PATH}" 2>&1 | tee ${TERRAFORM_APPLY_LOG_PATH} ; \
 	else \
-		${TERRAFORM_BINARY} apply "${TERRAFORM_PLAN_PATH}" 2>&1 | tee ${TERRAFORM_APPLY_LOG_PATH} ; \
-	fi
-	@if [[ -s ${TERRAFORM_APPLY_LOG_PATH} ]] && grep 'Apply complete' ${TERRAFORM_APPLY_LOG_PATH} ; then \
+		echo "Skipped apply" ; \
+		exit 0 ; \
+	fi ; \
+	if [[ ! -s "${TERRAFORM_APPLY_LOG_PATH}" ]] ; then \
+		echo "Failed to apply plan - Apply log does not exist '${TERRAFORM_APPLY_LOG_PATH}'" ; \
+		exit 0 ; \
+	elif grep "Apply complete" "${TERRAFORM_APPLY_LOG_PATH}" ; then \
 		echo Successfully applied plan ; \
 		exit 0 ; \
+	elif grep "No Changes" "${TERRAFORM_APPLY_LOG_PATH}" ; then \
+		echo No changes to apply ; \
+		exit 0 ; \
 	else \
-		echo Failed to apply plan ; \
-		exit 1 ; \
+		echo "Failed to apply plan - Unknown error" ; \
+		exit 44 ; \
 	fi
-
 
 infra-print-outputs: ## Print infra outputs with terraform
 	@cd $(TERRAFORM_LIVE_DIR) && terraform output ${EXTRA_ARGS}
