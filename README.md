@@ -72,9 +72,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - Newly created resources in AWS Console - VPC, S3 and DynamoDB Table
    - CI/CD logs in the Actions tab ([this repo's logs](https://github.com/unfor19/terraform-multienv/actions))
    - The URL of the deployed static S3 website is available in the `terraform-apply` logs, for example:
-     1. `s3_bucket_url = terraform-20200912173059419600000001.s3-website-***.amazonaws.com`
-     2. Replace `***` with the `AWS_REGION`, for example `eu-west-1`
-        <br>[terraform-20200912175003424600000001.s3-website-**eu-west-1**.amazonaws.com](http://terraform-20200912173059419600000001.s3-website-eu-west-1.amazonaws.com)
+     1. `s3_bucket_url = terraform-20200912173059419600000001.s3-website-eu-west-1.amazonaws.com`
 
 5. Create `stg` branch
 
@@ -94,11 +92,11 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 8. How to proceed from here
    1. Plan on `dev` - commit and push to non-live branch
-   1. Promote feature branches to `dev` - create a PR to plan and merge to apply
-   2. Promote `dev` to `stg` - create a PR to plan and merge to apply
-   3. Promote `stg` to `prd` - create a PR to plan and merge to apply
-   4. Revert changes in a non-live branch - [reverting a commit](https://git-scm.com/docs/git-revert.html)
-   5. Revert changes in a live branch  (`dev`, `stg` and `prd`) - [reverting a PR](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reverting-a-pull-request#reverting-a-pull-request)
+   2. Promote feature branches to `dev` - create a PR to plan and merge to apply
+   3. Promote `dev` to `stg` - create a PR to plan and merge to apply
+   4. Promote `stg` to `prd` - create a PR to plan and merge to apply
+   5. Revert changes in a non-live branch - [reverting a commit](https://git-scm.com/docs/git-revert.html)
+   6. Revert changes in a live branch  (`dev`, `stg` and `prd`) - [reverting a PR](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reverting-a-pull-request#reverting-a-pull-request)
 
 ## Recommendations
 
