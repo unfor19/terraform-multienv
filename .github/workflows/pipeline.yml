@@ -1,0 +1,181 @@
+name: Pipeline
+
+on:
+  push: # includes merge event; deploys only on live branches (dev, stg, prd)
+  pull_request: # plan only
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - dev
+      - stg
+      - prd
+
+env:
+  ### ---------------------------------------------------------------
+  APP_NAME: tfmultienv-example
+  AWS_REGION: eu-west-1
+  CACHE_TERRAFORM_VERSION: "6" ### Switch the number to purge cache
+  TERRAFORM_VERSION: 1.2.5
+  GIT_COMMIT: ${{ github.sha }}
+  GIT_BRANCH: ${{ github.base_ref }} # For PRs only
+  GIT_BUILD_NUMBER: ${{ github.run_id }}
+  TERRAFORM_LIVE_DIR: live
+  ### ---------------------------------------------------------------
+
+jobs:
+  prepare:
+    name: Prepare
+    # runs-on: ubuntu-20.04
+    runs-on: [self-hosted, x64, linux, linux-runner]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v3.x
+      - name: Print Outputs
+        run: |
+          echo -e "${{join(steps.prep.outputs.*, '\n')}}"
+      - name: Set Configmap
+        id: set-configmap
+        run: |
+          jq . configmap.json
+          jq -c . configmap.json
+          echo "::set-output name=configmap::$(jq -c . configmap.json)"
+      - name: Export Configmap
+        with:
+          configmap_map: ${{ steps.set-configmap.outputs.configmap }}
+          configmap_key: ${{ github.ref_name }}
+        id: export-configmap
+        uses: unfor19/configmap-action@development
+      - name: Dynamic Outputs
+        id: dynamic-outputs
+        run: |
+          echo "github.event.pull_request.head.sha = ${{ github.event.pull_request.head.sha }}"
+          GIT_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_SLUG}"
+          echo "::set-output name=GIT_SHORT_COMMIT::${GITHUB_SHA:0:8}"
+          echo "::set-output name=GIT_BRANCH::${GIT_BRANCH}"
+          echo "::set-output name=DEPLOYMENT_ENVIRONMENT::${DEPLOYMENT_ENVIRONMENT}"
+          [[ ${{ steps.export-configmap.outputs.CONFIGMAP_SELECTED_KEY }} != "default" && $GITHUB_EVENT_NAME == "push" ]] && IS_DEPLOY=true || IS_DEPLOY=false
+          echo "::set-output name=IS_DEPLOY::${IS_DEPLOY}"
+          echo "IS_DEPLOY=${IS_DEPLOY}"
+    outputs:
+      GIT_BRANCH: ${{ steps.dynamic-outputs.outputs.git_branch }}
+      DEPLOYMENT_ENVIRONMENT: ${{ steps.dynamic-outputs.outputs.deployment_environment }}
+      CONFIGMAP: ${{ steps.export-configmap.outputs.CONFIGMAP_MAP }}
+      GIT_COMMIT: ${{ steps.dynamic-outputs.outputs.GIT_SHORT_COMMIT }}
+      IS_DEPLOY: ${{ steps.dynamic-outputs.outputs.IS_DEPLOY }}
+
+  infra-plan:
+    name: Infra Plan - ${{ matrix.configmap.STAGE }}
+    runs-on: ubuntu-20.04
+    needs:
+      - prepare
+    if: ${{ needs.prepare.outputs.IS_DEPLOY != 'true' }}
+    strategy:
+      matrix:
+        configmap: ${{ fromJSON(needs.prepare.outputs.CONFIGMAP) }}
+    env:
+      GIT_BRANCH: ${{ needs.prepare.outputs.configmap.GIT_BRANCH }}
+      STAGE: ${{ matrix.configmap.STAGE }}
+      DEPLOY_AWS_ACCESS_KEY_ID_NAME: ${{ matrix.configmap.DEPLOY_AWS_ACCESS_KEY_ID_NAME }}
+      DEPLOY_AWS_SECRET_ACCESS_KEY_NAME: ${{ matrix.configmap.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME }}
+      PLAN_PATH: ${{ env.TERRAFORM_LIVE_DIR }}/.${{ env.APP_NAME }}-${{ matrix.configmap.STAGE }}-plan
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      - name: Config Terraform plugin cache
+        run: |
+          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+      - name: Cache Terraform
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-${{ env.APP_NAME }}-terraform-${{ env.TERRAFORM_VERSION }}-infra-${{ env.CACHE_TERRAFORM_VERSION }}-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.APP_NAME }}-terraform-${{ env.TERRAFORM_VERSION }}-infra-${{ env.CACHE_TERRAFORM_VERSION }}
+      - name: Infra Prepare Terraform Backend
+        # Creates a terraform backend with CloudFormation
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets[env.DEPLOY_AWS_ACCESS_KEY_ID_NAME] }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets[env.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME] }}
+        run: |
+          make infra-prepare-backend
+      - name: Infra Init
+        # Terraform init - sets remote S3 backend and installs modules
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets[env.DEPLOY_AWS_ACCESS_KEY_ID_NAME] }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets[env.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME] }}
+        run: |
+          make infra-init
+      - name: Infra Plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets[env.DEPLOY_AWS_ACCESS_KEY_ID_NAME] }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets[env.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME] }}
+        run: |
+          make infra-plan
+      - name: Upload Terraform Plan As Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.APP_NAME }}-terraform-infra-plan-${{ env.STAGE }}
+          path: ${{ env.PLAN_PATH }}
+
+  # Deployment jobs - Runs only for merged pull requests to live environments (dev, stg, prd)
+  infra-apply:
+    name: Infra Apply - ${{ matrix.configmap.STAGE }}
+    runs-on: ubuntu-20.04
+    needs:
+      - prepare
+    if: ${{ needs.prepare.outputs.IS_DEPLOY == 'true' }}
+    strategy:
+      matrix:
+        configmap: ${{ fromJSON(needs.prepare.outputs.CONFIGMAP) }}
+    env:
+      STAGE: ${{ matrix.configmap.STAGE }}
+      DEPLOY_AWS_ACCESS_KEY_ID_NAME: ${{ matrix.configmap.DEPLOY_AWS_ACCESS_KEY_ID_NAME }}
+      DEPLOY_AWS_SECRET_ACCESS_KEY_NAME: ${{ matrix.configmap.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Terraform Plan for ${{ env.STAGE }}
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          path: live
+          github_token: ${{ secrets.GH_TOKEN }}
+          workflow: pipeline.yml
+          workflow_conclusion: success
+          pr: ${{github.event.pull_request.number}}
+          event: push
+          name: ${{ env.APP_NAME }}-terraform-infra-plan-${{ env.STAGE }}
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      - name: Config Terraform plugin cache
+        run: |
+          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+      - name: Cache Terraform
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-${{ env.APP_NAME }}-terraform-${{ env.TERRAFORM_VERSION }}-infra-${{ env.CACHE_TERRAFORM_VERSION }}-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.APP_NAME }}-terraform-${{ env.TERRAFORM_VERSION }}-infra-${{ env.CACHE_TERRAFORM_VERSION }}
+      - name: Infra Init
+        # Terraform init - sets remote S3 backend and installs modules
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets[env.DEPLOY_AWS_ACCESS_KEY_ID_NAME] }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets[env.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME] }}
+        run: |
+          make infra-init
+      - name: Infra Apply
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets[env.DEPLOY_AWS_ACCESS_KEY_ID_NAME] }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets[env.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME] }}
+        run: |
+          make infra-apply

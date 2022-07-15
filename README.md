@@ -47,19 +47,18 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - Name: `${app_name}-${environment}-cicd`
    - Permissions: Allow `Programmatic Access` and attach the IAM policy `AdministratorAccess` (See [Recommendations](https://github.com/unfor19/terraform-multienv#security))
    - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
-1. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) for basic application details
-
-   - `APP_NAME` - Application name, such as `tfmultienv-example`
-   - `AWS_REGION` - Region to deploy the application, such as `eu-west-1` (Ireland)
-
-1. GitHub > Create the following repository secrets for authenticating with AWS, according to the access keys that were created in previous steps
+2. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) for authenticating with AWS, according to the access keys that were created in previous steps
 
    - `AWS_ACCESS_KEY_ID_DEV`
    - `AWS_SECRET_ACCESS_KEY_DEV`
-     <br>**IMPORTANT**: The names of the secrets are not arbitrary, make sure you set them as shown in the example below
+   - `AWS_ACCESS_KEY_ID_STG`
+   - `AWS_SECRET_ACCESS_KEY_STG`
+   - `AWS_ACCESS_KEY_ID_PRD`
+   - `AWS_SECRET_ACCESS_KEY_PRD`
+     <br>**IMPORTANT**: Secrets **names** are maintained in [configmap.json](./configmap.json)
      ![github-secrets-example](https://unfor19-tfmultienv.s3-eu-west-1.amazonaws.com/assets/github-secrets-example.png)
 
-1. Deploying the infrastructure - Commit and push changes to your repository
+3. Deploying the infrastructure - Commit and push changes to your repository
 
    ```
    git checkout dev
@@ -68,16 +67,16 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    git push --set-upstream origin dev
    ```
 
-1. Results
+4. Results
 
    - Newly created resources in AWS Console - VPC, S3 and DynamoDB Table
    - CI/CD logs in the Actions tab ([this repo's logs](https://github.com/unfor19/terraform-multienv/actions))
    - The URL of the deployed static S3 website is available in the `terraform-apply` logs, for example:
      1. `s3_bucket_url = terraform-20200912173059419600000001.s3-website-***.amazonaws.com`
-     1. Replace `***` with the `AWS_REGION`, for example `eu-west-1`
+     2. Replace `***` with the `AWS_REGION`, for example `eu-west-1`
         <br>[terraform-20200912175003424600000001.s3-website-**eu-west-1**.amazonaws.com](http://terraform-20200912173059419600000001.s3-website-eu-west-1.amazonaws.com)
 
-1. Create `stg` branch
+5. Create `stg` branch
 
    ```
    git checkout dev
@@ -85,20 +84,21 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    git push --set-upstream origin stg
    ```
 
-1. GitHub > Promote `dev` environment to `stg`
+6. GitHub > Promote `dev` environment to `stg`
 
    - Create a PR from `dev` to `stg`
    - The plan to `stg` is added as a comment by the [terraform-plan](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-plan.yml) pipeline
    - Merge the changes to `stg`, and check the [terraform-apply](https://github.com/unfor19/terraform-multienv/blob/dev/.github/workflows/terraform-apply.yml) pipeline in the Actions tab
 
-1. That's it, you've just deployed two identical environments! Go ahead and do the same with `prd`
+7. That's it, you've just deployed two identical environments! Go ahead and do the same with `prd`
 
-1. How to proceed from here
-   1. Make changes in `dev` - commit and push
-   1. Promote `dev` to `stg` - create a PR
-   1. Promote `stg` to `prd` - create a PR
-   1. Revert changes in `dev` - [reverting a commit](https://git-scm.com/docs/git-revert.html)
-   1. Revert changes in `stg` and `prd` - [reverting a PR](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reverting-a-pull-request#reverting-a-pull-request)
+8. How to proceed from here
+   1. Plan on `dev` - commit and push to non-live branch
+   1. Promote feature branches to `dev` - create a PR to plan and merge to apply
+   2. Promote `dev` to `stg` - create a PR to plan and merge to apply
+   3. Promote `stg` to `prd` - create a PR to plan and merge to apply
+   4. Revert changes in a non-live branch - [reverting a commit](https://git-scm.com/docs/git-revert.html)
+   5. Revert changes in a live branch  (`dev`, `stg` and `prd`) - [reverting a PR](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reverting-a-pull-request#reverting-a-pull-request)
 
 ## Recommendations
 
@@ -128,7 +128,6 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 - **Default Branch** is **dev** since this is the branch that is mostly used
 - **Branches Names** per environment makes the whole CI/CD process **simpler**
-- **Feature Branch** per environment **complicates** the whole process, since creating an environment per feature-branch means creating a Terraform Backend per feature-branch.
 
 ### Repository Structure
 
