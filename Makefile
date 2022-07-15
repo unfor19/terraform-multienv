@@ -162,7 +162,7 @@ infra-prepare-backend: validate # Create Terraform backend S3Bucket and DynamoDB
 
 
 # terraform providers lock - is very important, it generates a lock file to all platforms
-infra-init: ## Prepare for creating a plan with terraform (init)
+infra-init: validate validate-TERRAFORM_LIVE_DIR validate-TERRAFORM_BACKENDTPL_PATH validate-TERRAFORM_BINARY ## Prepare for creating a plan with terraform (init)
 	@cd $(TERRAFORM_LIVE_DIR) && \
 		${TERRAFORM_BINARY} init -backend-config="${TERRAFORM_BACKENDTPL_PATH}"
 	@if [[ -n "${CI}" ]]; then \
@@ -171,11 +171,12 @@ infra-init: ## Prepare for creating a plan with terraform (init)
 	fi
 
 
-infra-plan: ## Generate a Plan with terraform
-	@rm -f ${TERRAFORM_PLAN_PATH} ${TERRAFORM_PLAN_LOG_PATH}
+infra-plan: validate validate-TERRAFORM_PLAN_PATH validate-TERRAFORM_PLAN_LOG_PATH ## Generate a Plan with terraform
+	@[[ -f ${TERRAFORM_PLAN_PATH} ]] && rm ${TERRAFORM_PLAN_PATH}
+	@[[ -f ${TERRAFORM_PLAN_LOG_PATH} ]] && rm ${TERRAFORM_PLAN_LOG_PATH}
 	@cd $(TERRAFORM_LIVE_DIR) && ${TERRAFORM_BINARY} plan -out "${TERRAFORM_PLAN_PATH}" | tee ${TERRAFORM_PLAN_LOG_PATH}
 	@if grep 'found no differences, so no changes are needed' ${TERRAFORM_PLAN_LOG_PATH} ; then \
-		rm -f ${TERRAFORM_PLAN_PATH} ; \
+		[[ -f ${TERRAFORM_PLAN_PATH} ]] && rm ${TERRAFORM_PLAN_PATH} ; \
 		[[ "${CI}" = "true" ]] && echo "::warning file=Makefile:: Skipped infra-plan" ; \
 		exit 0 ; \
 	else \
@@ -183,13 +184,17 @@ infra-plan: ## Generate a Plan with terraform
 	fi
 
 
-infra-apply: ## Apply plan with terraform
-	@cd $(TERRAFORM_LIVE_DIR) && [ ! -s ${TERRAFORM_PLAN_PATH} ] && exit 0 || ${TERRAFORM_BINARY} apply "${TERRAFORM_PLAN_PATH}" 2>&1 | tee ${TERRAFORM_APPLY_LOG_PATH}
-	@if [[ ! -s ${TERRAFORM_PLAN_PATH} ]]; then \
+infra-apply: validate validate-TERRAFORM_LIVE_DIR validate-TERRAFORM_PLAN_PATH validate-TERRAFORM_BINARY ## Apply plan with terraform
+	@[[ -f ${TERRAFORM_APPLY_LOG_PATH} ]] && rm ${TERRAFORM_APPLY_LOG_PATH}
+	@cd $(TERRAFORM_LIVE_DIR) && \
+	if [[ ! -s ${TERRAFORM_PLAN_PATH} ]] ; then \
 		echo Skipped apply ; \
 		exit 0 ; \
-	elif [ -s ${TERRAFORM_APPLY_LOG_PATH} ] ; then \
-		grep 'Apply complete' ${TERRAFORM_APPLY_LOG_PATH} ; \
+	else \
+		unset AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID ; \
+		${TERRAFORM_BINARY} apply "${TERRAFORM_PLAN_PATH}" 2>&1 | tee ${TERRAFORM_APPLY_LOG_PATH} ; \
+	fi
+	@if [[ -s ${TERRAFORM_APPLY_LOG_PATH} ]] && grep 'Apply complete' ${TERRAFORM_APPLY_LOG_PATH} ; then \
 		echo Successfully applied plan ; \
 		exit 0 ; \
 	else \
