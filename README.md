@@ -24,7 +24,6 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 ## Assumptions
 
 - Branches names are aligned with environments names, for example `dev`, `stg` and `prd`
-- The CI/CD tool supports the variable `${BRANCH_NAME}`, for example `${DRONE_BRANCH}`
 - The directory `./live` contains infrastructure-as-code files - `*.tf`, `*.tpl`, `*.json`
 
 - Multiple Environments
@@ -34,7 +33,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
 
 - Variables
 
-  - \${app_name} = `tfmultienv`
+  - \${app_name} = `tfmultienv-example`
   - \${environment} = `dev` or `stg` or `prd`
 
 ## Getting Started
@@ -50,7 +49,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
 1. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) for basic application details
 
-   - `APP_NAME` - Application name, such as `tfmultienv`
+   - `APP_NAME` - Application name, such as `tfmultienv-example`
    - `AWS_REGION` - Region to deploy the application, such as `eu-west-1` (Ireland)
 
 1. GitHub > Create the following repository secrets for authenticating with AWS, according to the access keys that were created in previous steps
