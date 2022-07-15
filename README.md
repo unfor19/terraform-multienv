@@ -73,7 +73,8 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - Newly created resources in AWS Console - VPC, S3 and DynamoDB Table
    - CI/CD logs in the Actions tab ([this repo's logs](https://github.com/unfor19/terraform-multienv/actions))
    - The URL of the deployed static S3 website is available in the `terraform-apply` logs, for example:
-     1. `s3_bucket_url = terraform-20200912173059419600000001.s3-website-eu-west-1.amazonaws.com`
+     1. `s3_bucket_url = terraform-20220715150221173100000001.s3-website-eu-west-1.amazonaws.com/`
+     2. Check this repo's `dev` deployment final results - [terraform-20220715150221173100000001.s3-website-eu-west-1.amazonaws.com/](http://terraform-20220715150221173100000001.s3-website-eu-west-1.amazonaws.com/)
 
 5. Create `stg` branch
 
