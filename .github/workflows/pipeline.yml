@@ -27,8 +27,7 @@ env:
 jobs:
   prepare:
     name: Prepare
-    # runs-on: ubuntu-20.04
-    runs-on: [self-hosted, x64, linux, linux-runner]
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Inject slug/short variables
