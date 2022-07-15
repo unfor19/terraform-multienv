@@ -64,6 +64,8 @@ jobs:
       CONFIGMAP: ${{ steps.export-configmap.outputs.CONFIGMAP_MAP }}
       GIT_COMMIT: ${{ steps.dynamic-outputs.outputs.GIT_SHORT_COMMIT }}
       IS_DEPLOY: ${{ steps.dynamic-outputs.outputs.IS_DEPLOY }}
+      TERRAFORM_LIVE_DIR: ${{ env.TERRAFORM_LIVE_DIR }}
+      APP_NAME: ${{ env.APP_NAME }}
 
   infra-plan:
     name: Infra Plan - ${{ matrix.configmap.STAGE }}
@@ -79,7 +81,7 @@ jobs:
       STAGE: ${{ matrix.configmap.STAGE }}
       DEPLOY_AWS_ACCESS_KEY_ID_NAME: ${{ matrix.configmap.DEPLOY_AWS_ACCESS_KEY_ID_NAME }}
       DEPLOY_AWS_SECRET_ACCESS_KEY_NAME: ${{ matrix.configmap.DEPLOY_AWS_SECRET_ACCESS_KEY_NAME }}
-      PLAN_PATH: ${{ env.TERRAFORM_LIVE_DIR }}/.${{ env.APP_NAME }}-${{ matrix.configmap.STAGE }}-plan
+      PLAN_PATH: ${{ needs.prepare.outputs.TERRAFORM_LIVE_DIR }}/.${{ needs.prepare.outputs.APP_NAME }}-${{ matrix.configmap.STAGE }}-plan
     steps:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
