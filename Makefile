@@ -191,7 +191,6 @@ infra-apply: validate validate-TERRAFORM_LIVE_DIR validate-TERRAFORM_PLAN_PATH v
 		echo Skipped apply ; \
 		exit 0 ; \
 	else \
-		unset AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID ; \
 		${TERRAFORM_BINARY} apply "${TERRAFORM_PLAN_PATH}" 2>&1 | tee ${TERRAFORM_APPLY_LOG_PATH} ; \
 	fi
 	@if [[ -s ${TERRAFORM_APPLY_LOG_PATH} ]] && grep 'Apply complete' ${TERRAFORM_APPLY_LOG_PATH} ; then \
