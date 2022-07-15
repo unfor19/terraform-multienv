@@ -196,3 +196,7 @@ infra-apply: ## Apply plan with terraform
 		echo Failed to apply plan ; \
 		exit 1 ; \
 	fi
+
+
+infra-print-outputs: ## Print infra outputs with terraform
+	@cd $(TERRAFORM_LIVE_DIR) && terraform output ${EXTRA_ARGS}
