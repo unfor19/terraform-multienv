@@ -146,7 +146,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           path: live
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN_DOWNLOAD_ARTIFACT }}
           workflow: pipeline.yml
           workflow_conclusion: success
           pr: ${{github.event.pull_request.number}}

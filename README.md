@@ -49,6 +49,7 @@ A template for maintaining a multiple environments infrastructure with [Terrafor
    - [Create AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) and save them in a safe place, we'll use them in the next step
 2. GitHub > Create the following [repository secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) for authenticating with AWS, according to the access keys that were created in previous steps
 
+   - `GH_TOKEN_DOWNLOAD_ARTIFACT` - Create a [GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `repo` access
    - `AWS_ACCESS_KEY_ID_DEV`
    - `AWS_SECRET_ACCESS_KEY_DEV`
    - `AWS_ACCESS_KEY_ID_STG`
