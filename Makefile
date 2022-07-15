@@ -108,7 +108,7 @@ TERRAFORM_APPLY_LOG_PATH:=${TERRAFORM_LIVE_DIR}/.${APP_NAME}-${STAGE}-apply.log
 TERRAFORM_BACKENDTPL_PATH:=${TERRAFORM_LIVE_DIR}/backend.${STAGE}.tpl
 TERRAFORM_BACKEND_CFN_PATH:=${ROOT_DIR}/cloudformation/cfn-tfbackend.yml
 TERRAFORM_BACKEND_STACK_NAME:=${APP_NAME}-terraform-backend-${STAGE}
-TERRAFORM_BACKEND_STACK_LOG_PATH=:${TERRAFORM_LIVE_DIR}/.${APP_NAME}-${STAGE}-backend.log
+TERRAFORM_BACKEND_STACK_LOG_PATH:=${TERRAFORM_LIVE_DIR}/.${APP_NAME}-${STAGE}-backend.log
 
 # To validate env vars, add "validate-MY_ENV_VAR" 
 # as a prerequisite to the relevant target/step
